@@ -93,6 +93,11 @@ if errorlevel 1 (
     python -m ensurepip --upgrade
 )
 
+REM Nettoyer les installations corrompues
+echo        Nettoyage des installations corrompues...
+for /d %%d in ("%LOCALAPPDATA%\Programs\Python\Python*\Lib\site-packages\~*") do rd /s /q "%%d" 2>nul
+for /d %%d in ("%LOCALAPPDATA%\Programs\Python\Python*\Lib\site-packages\-*") do rd /s /q "%%d" 2>nul
+
 REM Installer les packages essentiels
 echo        Installation des packages (cela peut prendre quelques minutes)...
 python -m pip install --quiet --upgrade pip
