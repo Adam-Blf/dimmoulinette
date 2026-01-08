@@ -36,7 +36,7 @@ class Config:
     """Configuration centralisée du pipeline ETL."""
 
     # Chemins
-    SOURCE_DIR = Path(r"C:\Users\adamb\Downloads\frer")
+    SOURCE_DIR = Path("./data/pmsi")
     OUTPUT_DIR = Path("./output")
     MANIFEST_FILE = Path("./.data_manifest.json")
 
@@ -269,13 +269,14 @@ class PMSIProcessor:
             else:
                 separator = ','
 
-            # Lecture avec Polars
+            # Lecture avec Polars - forcer tous les types en string
             df = pl.read_csv(
                 filepath,
                 separator=separator,
                 ignore_errors=True,
                 truncate_ragged_lines=True,
-                encoding='utf8-lossy'
+                encoding='utf8-lossy',
+                infer_schema_length=0  # Force toutes les colonnes en String
             )
 
             logger.info(f"  ✓ Chargé: {filepath.name} ({len(df)} lignes, {len(df.columns)} colonnes)")

@@ -1004,7 +1004,7 @@ def main():
         manager = AIManager()
         manager.initialize()
         if manager.load_model():
-            df = pl.read_csv(args.file, separator=";")
+            df = pl.read_csv(args.file, separator=";", infer_schema_length=0)
             result_df = manager.analyze_dataframe(df)
             output_path = Path(args.file).stem + "_analyzed.csv"
             result_df.write_csv(output_path, separator=";")

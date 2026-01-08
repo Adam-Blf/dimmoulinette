@@ -34,7 +34,7 @@ from loguru import logger
 
 class AppConfig:
     """Configuration de l'application."""
-    SOURCE_DIR = Path(r"C:\Users\adamb\Downloads\frer")
+    SOURCE_DIR = Path("./data/pmsi")  # Dossier local avec fichiers PMSI
     OUTPUT_DIR = Path("./output")
     TEMPLATES_DIR = Path("./templates")
     MODELS_DIR = Path("./models")
@@ -432,7 +432,7 @@ async def training_task(epochs: int, data_file: str, create_ollama: bool):
                 episodes_files = list(AppConfig.OUTPUT_DIR.glob("*_episodes.csv"))
                 if episodes_files:
                     log_buffer.add(f"Utilisation de {episodes_files[0].name}")
-                    df = pl.read_csv(episodes_files[0], separator=";")
+                    df = pl.read_csv(episodes_files[0], separator=";", infer_schema_length=0)
                     preparer = DatasetPreparer()
                     samples = preparer.prepare_from_episodes(df)
                 else:
@@ -1065,7 +1065,7 @@ def main():
        Moulinettes PMSI + IA Locale - Dashboard
 ================================================================
   Interface: http://localhost:8080
-  Source:    C:\\Users\\adamb\\Downloads\\frer
+  Source:    ./data/pmsi
   Output:    ./output
   IA:        Ollama / llama-cpp-python
 ================================================================

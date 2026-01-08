@@ -48,7 +48,7 @@ class FileType(Enum):
 @dataclass
 class ETLConfig:
     """Configuration du processeur ETL."""
-    source_dir: Path = field(default_factory=lambda: Path(r"C:\Users\adamb\Downloads\frer"))
+    source_dir: Path = field(default_factory=lambda: Path("./data/pmsi"))
     output_dir: Path = field(default_factory=lambda: Path("./output"))
     configs_dir: Path = field(default_factory=lambda: Path("./configs"))
     csv_separator: str = ";"
@@ -330,7 +330,8 @@ class UniversalParser:
                     separator=separator,
                     ignore_errors=True,
                     truncate_ragged_lines=True,
-                    encoding='utf8-lossy'
+                    encoding='utf8-lossy',
+                    infer_schema_length=0  # Force toutes les colonnes en String
                 )
                 df = df.with_columns([
                     pl.lit(filepath.name).alias("_source_file")
@@ -494,7 +495,7 @@ def main():
     parser.add_argument(
         "--source", "-s",
         type=str,
-        default=r"C:\Users\adamb\Downloads\frer",
+        default="./data/pmsi",
         help="Répertoire source des fichiers PMSI"
     )
     parser.add_argument(

@@ -446,7 +446,7 @@ class TrainingDataPreparer:
             print_error(f"Fichier non trouve: {episodes_file}")
             return []
 
-        df = pl.read_csv(episodes_file, separator=";")
+        df = pl.read_csv(episodes_file, separator=";", infer_schema_length=0)
         examples = []
 
         for row in df.iter_rows(named=True):

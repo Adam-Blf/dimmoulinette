@@ -36,7 +36,7 @@ except ImportError:
 @dataclass
 class AuditConfig:
     """Configuration de l'audit de sécurité."""
-    source_dir: Path = field(default_factory=lambda: Path(r"C:\Users\adamb\Downloads\frer"))
+    source_dir: Path = field(default_factory=lambda: Path("./data/pmsi"))
     project_dir: Path = field(default_factory=lambda: Path(__file__).parent.resolve())
     output_dir: Path = field(default_factory=lambda: Path(__file__).parent / "output")
     configs_dir: Path = field(default_factory=lambda: Path(__file__).parent / "configs")
