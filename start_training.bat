@@ -105,80 +105,23 @@ echo.
 echo [4/7] Detection automatique du materiel...
 echo.
 
-REM Creer un script Python temporaire pour la detection
-python -c "
-import sys
-import os
-
-# Detection GPU
-gpu_detected = False
-gpu_name = 'Aucun'
-vram_gb = 0
-
-try:
-    import torch
-    if torch.cuda.is_available():
-        gpu_detected = True
-        gpu_name = torch.cuda.get_device_name(0)
-        vram_gb = torch.cuda.get_device_properties(0).total_memory / (1024**3)
-except:
-    pass
-
-# Si pas de PyTorch, essayer nvidia-smi
-if not gpu_detected:
-    import subprocess
-    try:
-        result = subprocess.run(['nvidia-smi', '--query-gpu=name,memory.total', '--format=csv,noheader,nounits'],
-                              capture_output=True, text=True, timeout=10)
-        if result.returncode == 0:
-            parts = result.stdout.strip().split(', ')
-            if len(parts) >= 2:
-                gpu_detected = True
-                gpu_name = parts[0].strip()
-                vram_gb = float(parts[1].strip()) / 1024
-    except:
-        pass
-
-# Detection CPU/RAM
-import platform
-try:
-    import psutil
-    ram_gb = psutil.virtual_memory().total / (1024**3)
-except:
-    ram_gb = 8
-
-cpu_count = os.cpu_count() or 4
-
-# Affichage
-print('=' * 60)
-print('  MATERIEL DETECTE')
-print('=' * 60)
-print(f'  CPU      : {cpu_count} coeurs')
-print(f'  RAM      : {ram_gb:.1f} GB')
-if gpu_detected:
-    print(f'  GPU      : {gpu_name}')
-    print(f'  VRAM     : {vram_gb:.1f} GB')
-else:
-    print(f'  GPU      : Non detecte (mode CPU)')
-print('=' * 60)
-
-# Ecrire la config pour le batch
-with open('_gpu_detected.tmp', 'w') as f:
-    f.write('1' if gpu_detected else '0')
-with open('_vram_gb.tmp', 'w') as f:
-    f.write(str(vram_gb))
-"
-
-REM Lire les resultats
+REM Detection GPU via nvidia-smi (plus fiable que Python inline)
 set GPU_DETECTED=0
+set GPU_NAME=Aucun
 set VRAM_GB=0
-if exist _gpu_detected.tmp (
-    set /p GPU_DETECTED=<_gpu_detected.tmp
-    del _gpu_detected.tmp
-)
-if exist _vram_gb.tmp (
-    set /p VRAM_GB=<_vram_gb.tmp
-    del _vram_gb.tmp
+
+nvidia-smi --query-gpu=name,memory.total --format=csv,noheader 2>nul > _gpu_info.tmp
+if not errorlevel 1 (
+    set GPU_DETECTED=1
+    for /f "tokens=1,2 delims=," %%a in (_gpu_info.tmp) do (
+        set GPU_NAME=%%a
+        set VRAM_MB=%%b
+    )
+    del _gpu_info.tmp 2>nul
+    echo        GPU detecte: !GPU_NAME!
+) else (
+    del _gpu_info.tmp 2>nul
+    echo        Pas de GPU NVIDIA detecte - Mode CPU
 )
 
 REM ============================================================
@@ -209,13 +152,13 @@ REM ============================================================
 echo.
 echo [6/7] Installation des bibliotheques ML...
 
-python -m pip install --quiet transformers>=4.36.0 datasets>=2.16.0 accelerate>=0.25.0
-python -m pip install --quiet peft>=0.7.0 trl>=0.7.0
+python -m pip install --quiet "transformers>=4.36.0" "datasets>=2.16.0" "accelerate>=0.25.0"
+python -m pip install --quiet "peft>=0.7.0" "trl>=0.7.0"
 
 REM BitsAndBytes (seulement si GPU)
 if "%GPU_DETECTED%"=="1" (
     echo        Installation bitsandbytes pour quantification 4-bit...
-    python -m pip install --quiet bitsandbytes>=0.42.0
+    python -m pip install --quiet "bitsandbytes>=0.42.0"
 )
 
 echo        Verification des installations...
