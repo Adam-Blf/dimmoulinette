@@ -1,9 +1,9 @@
 """
 ===============================================================================
-FINETUNE_LORA.PY - Fine-tuning QLoRA 4-bit pour LLM Médical
+FINETUNE_LORA.PY - Fine-tuning QLoRA 4-bit pour LLM Medical
 ===============================================================================
-Moulinettes DIM - Entraînement sur données PMSI Psychiatrie
-Auteur: Adam B. | Optimisé pour GPU standard (8GB+ VRAM)
+Moulinettes DIM - Entrainement sur donnees PMSI Psychiatrie
+Auteur: Adam B. | Detection automatique du materiel
 ===============================================================================
 """
 
@@ -24,44 +24,126 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ============================================================================
-# CONFIGURATION
+# CONFIGURATION DYNAMIQUE (AUTO-DETECTEE)
 # ============================================================================
 
 class TrainingConfig:
-    """Configuration du fine-tuning."""
+    """Configuration du fine-tuning - Auto-detectee selon le materiel."""
 
-    # ===========================================
-    # CONFIGURATION RTX 3050 (4-6GB VRAM)
-    # ===========================================
-
-    # Modèle de base - Phi-2 recommandé pour RTX 3050
-    MODEL_ID = "microsoft/phi-2"  # 2.7B params - Idéal pour 4-6GB VRAM
-    # MODEL_ID = "mistralai/Mistral-7B-Instruct-v0.3"  # Décommenter si 6GB+ VRAM
-    MODEL_FALLBACK = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # Fallback ultra-léger
-
-    # Chemins
+    # Chemins (fixes)
     DATASET_PATH = Path("./output/train_dataset.jsonl")
     OUTPUT_DIR = Path("./models/adapters")
     CACHE_DIR = Path("./models/cache")
 
-    # Paramètres QLoRA - Optimisés RTX 3050
-    LORA_R = 8           # Rang réduit pour économiser VRAM
-    LORA_ALPHA = 16      # Scaling factor
-    LORA_DROPOUT = 0.05  # Dropout pour régularisation
-    TARGET_MODULES = ["q_proj", "k_proj", "v_proj", "o_proj"]  # Moins de modules
+    # Valeurs par defaut (seront ecrasees par auto-detection)
+    MODEL_ID = "microsoft/phi-2"
+    MODEL_FALLBACK = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
-    # Paramètres d'entraînement - RTX 3050
-    BATCH_SIZE = 1       # Batch minimal pour RTX 3050
-    GRADIENT_ACCUMULATION = 8  # Compense le petit batch
+    LORA_R = 8
+    LORA_ALPHA = 16
+    LORA_DROPOUT = 0.05
+    TARGET_MODULES = ["q_proj", "k_proj", "v_proj", "o_proj"]
+
+    BATCH_SIZE = 1
+    GRADIENT_ACCUMULATION = 8
     LEARNING_RATE = 2e-4
     NUM_EPOCHS = 3
-    MAX_SEQ_LENGTH = 256  # Réduit pour économiser VRAM
+    MAX_SEQ_LENGTH = 256
     WARMUP_RATIO = 0.03
 
-    # Quantification 4-bit (obligatoire pour RTX 3050)
     USE_4BIT = True
+    USE_CPU = False
     BNB_4BIT_COMPUTE_DTYPE = "float16"
     BNB_4BIT_QUANT_TYPE = "nf4"
+
+    # Info hardware detecte
+    HARDWARE_PROFILE = "unknown"
+    GPU_NAME = "N/A"
+    GPU_VRAM = 0.0
+
+    @classmethod
+    def from_auto_detection(cls):
+        """Cree une config basee sur la detection automatique du materiel."""
+        try:
+            from hardware_detector import detect_and_configure
+
+            logger.info("Detection automatique du materiel...")
+            system_info, config = detect_and_configure(save_config=True, verbose=True)
+
+            # Mise a jour des parametres
+            cls.MODEL_ID = config["model"]["model_id"]
+            cls.USE_4BIT = config["model"]["use_4bit"]
+            cls.USE_CPU = config["model"]["use_cpu"]
+
+            cls.BATCH_SIZE = config["training"]["batch_size"]
+            cls.GRADIENT_ACCUMULATION = config["training"]["gradient_accumulation_steps"]
+            cls.MAX_SEQ_LENGTH = config["training"]["max_seq_length"]
+
+            cls.LORA_R = config["lora"]["r"]
+            cls.LORA_ALPHA = config["lora"]["alpha"]
+
+            cls.HARDWARE_PROFILE = config["hardware"]["profile_name"]
+            cls.GPU_NAME = config["hardware"]["gpu_name"]
+            cls.GPU_VRAM = config["hardware"]["gpu_vram_gb"]
+
+            logger.info(f"Configuration chargee: {cls.HARDWARE_PROFILE}")
+            return cls
+
+        except ImportError:
+            logger.warning("Module hardware_detector non trouve - utilisation des valeurs par defaut")
+            return cls
+        except Exception as e:
+            logger.warning(f"Erreur detection auto: {e} - utilisation des valeurs par defaut")
+            return cls
+
+    @classmethod
+    def from_json(cls, json_path: str = "./training_config.json"):
+        """Charge la configuration depuis un fichier JSON."""
+        try:
+            with open(json_path, 'r') as f:
+                config = json.load(f)
+
+            cls.MODEL_ID = config["model"]["model_id"]
+            cls.USE_4BIT = config["model"]["use_4bit"]
+            cls.USE_CPU = config["model"]["use_cpu"]
+
+            cls.BATCH_SIZE = config["training"]["batch_size"]
+            cls.GRADIENT_ACCUMULATION = config["training"]["gradient_accumulation_steps"]
+            cls.MAX_SEQ_LENGTH = config["training"]["max_seq_length"]
+
+            cls.LORA_R = config["lora"]["r"]
+            cls.LORA_ALPHA = config["lora"]["alpha"]
+
+            cls.HARDWARE_PROFILE = config["hardware"]["profile_name"]
+            cls.GPU_NAME = config["hardware"]["gpu_name"]
+            cls.GPU_VRAM = config["hardware"]["gpu_vram_gb"]
+
+            logger.info(f"Configuration chargee depuis {json_path}")
+            return cls
+
+        except FileNotFoundError:
+            logger.warning(f"Fichier {json_path} non trouve - lancement de l'auto-detection")
+            return cls.from_auto_detection()
+        except Exception as e:
+            logger.warning(f"Erreur chargement config: {e}")
+            return cls
+
+    @classmethod
+    def print_config(cls):
+        """Affiche la configuration actuelle."""
+        print("\n" + "=" * 50)
+        print("  CONFIGURATION D'ENTRAINEMENT")
+        print("=" * 50)
+        print(f"  Profil      : {cls.HARDWARE_PROFILE}")
+        print(f"  GPU         : {cls.GPU_NAME} ({cls.GPU_VRAM:.1f} GB)")
+        print(f"  Modele      : {cls.MODEL_ID}")
+        print(f"  Batch size  : {cls.BATCH_SIZE}")
+        print(f"  Grad accum  : {cls.GRADIENT_ACCUMULATION}")
+        print(f"  Seq length  : {cls.MAX_SEQ_LENGTH}")
+        print(f"  LoRA r/alpha: {cls.LORA_R}/{cls.LORA_ALPHA}")
+        print(f"  4-bit quant : {cls.USE_4BIT}")
+        print(f"  Mode CPU    : {cls.USE_CPU}")
+        print("=" * 50 + "\n")
 
 
 # ============================================================================
@@ -581,47 +663,71 @@ class InferenceEngine:
 # ============================================================================
 
 def main():
-    """Point d'entrée principal."""
+    """Point d'entree principal."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Fine-tuning QLoRA pour PMSI")
-    parser.add_argument("--check", action="store_true", help="Vérifier le système uniquement")
-    parser.add_argument("--model", type=str, default=None, help="ID du modèle HuggingFace")
-    parser.add_argument("--predict", type=str, default=None, help="Faire une prédiction avec les adaptateurs")
+    parser = argparse.ArgumentParser(description="Fine-tuning QLoRA pour PMSI - Detection auto du materiel")
+    parser.add_argument("--check", action="store_true", help="Verifier le systeme uniquement")
+    parser.add_argument("--detect", action="store_true", help="Detecter le materiel et afficher la config optimale")
+    parser.add_argument("--auto-config", action="store_true", help="Utiliser la detection auto pour configurer l'entrainement")
+    parser.add_argument("--config", type=str, default=None, help="Charger la config depuis un fichier JSON")
+    parser.add_argument("--model", type=str, default=None, help="ID du modele HuggingFace (ecrase l'auto-detection)")
+    parser.add_argument("--predict", type=str, default=None, help="Faire une prediction avec les adaptateurs")
     parser.add_argument("--adapter-path", type=str, default="./models/adapters/final_adapter",
                        help="Chemin vers les adaptateurs")
     args = parser.parse_args()
 
     if args.check:
-        # Vérification système
-        print("\n=== VÉRIFICATION DU SYSTÈME ===\n")
-        print("Dépendances:")
+        # Verification systeme
+        print("\n=== VERIFICATION DU SYSTEME ===\n")
+        print("Dependances:")
         SystemChecker.check_dependencies()
         print("\nGPU:")
         gpu_info = SystemChecker.check_gpu()
-        print(f"\nModèle recommandé: {gpu_info['recommended_model']}")
+        print(f"\nModele recommande: {gpu_info['recommended_model']}")
+
+    elif args.detect:
+        # Detection materiel uniquement
+        try:
+            from hardware_detector import detect_and_configure
+            detect_and_configure(save_config=True, verbose=True)
+        except ImportError:
+            logger.error("Module hardware_detector.py non trouve")
 
     elif args.predict:
-        # Mode inférence
+        # Mode inference
         engine = InferenceEngine(args.adapter_path)
         response = engine.predict(
-            instruction="Détecter une anomalie de parcours patient en psychiatrie",
+            instruction="Detecter une anomalie de parcours patient en psychiatrie",
             input_text=args.predict
         )
-        print(f"\n🤖 Réponse:\n{response}")
+        print(f"\nReponse:\n{response}")
 
     else:
-        # Mode entraînement
-        config = TrainingConfig()
+        # Mode entrainement
+        # Configuration selon les arguments
+        if args.config:
+            config = TrainingConfig.from_json(args.config)
+        elif args.auto_config:
+            config = TrainingConfig.from_auto_detection()
+        else:
+            # Par defaut: auto-detection
+            config = TrainingConfig.from_auto_detection()
+
+        # Afficher la configuration
+        config.print_config()
+
         trainer = QLoRATrainer(config)
 
-        # Vérification des prérequis
+        # Verification des prerequis
         if not SystemChecker.check_dependencies():
-            logger.error("Installez les dépendances manquantes avant de continuer")
+            logger.error("Installez les dependances manquantes avant de continuer")
             return
 
-        # Lancement de l'entraînement
-        result = trainer.train(model_id=args.model)
+        # Lancement de l'entrainement
+        # Si --model specifie, il ecrase la detection auto
+        model_to_use = args.model if args.model else config.MODEL_ID
+        result = trainer.train(model_id=model_to_use)
         print(json.dumps(result, indent=2))
 
 
