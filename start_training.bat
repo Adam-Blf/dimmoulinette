@@ -130,7 +130,7 @@ REM ============================================================
 echo.
 echo [5/7] Installation de PyTorch...
 
-if "%GPU_DETECTED%"=="1" (
+if "!GPU_DETECTED!"=="1" (
     echo        GPU detecte - Installation PyTorch CUDA...
     python -m pip install --quiet torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
     if errorlevel 1 (
@@ -156,7 +156,7 @@ python -m pip install --quiet "transformers>=4.36.0" "datasets>=2.16.0" "acceler
 python -m pip install --quiet "peft>=0.7.0" "trl>=0.7.0"
 
 REM BitsAndBytes (seulement si GPU)
-if "%GPU_DETECTED%"=="1" (
+if "!GPU_DETECTED!"=="1" (
     echo        Installation bitsandbytes pour quantification 4-bit...
     python -m pip install --quiet "bitsandbytes>=0.42.0"
 )
