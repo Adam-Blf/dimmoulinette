@@ -110,22 +110,13 @@ echo.
 echo [4/7] Detection automatique du materiel...
 echo.
 
-REM Detection GPU via nvidia-smi (plus fiable que Python inline)
+REM Detection GPU via nvidia-smi
 set GPU_DETECTED=0
-set GPU_NAME=Aucun
-set VRAM_GB=0
-
-nvidia-smi --query-gpu=name,memory.total --format=csv,noheader 2>nul > _gpu_info.tmp
-if not errorlevel 1 (
+nvidia-smi >nul 2>&1
+if !errorlevel! equ 0 (
     set GPU_DETECTED=1
-    for /f "tokens=1,2 delims=," %%a in (_gpu_info.tmp) do (
-        set GPU_NAME=%%a
-        set VRAM_MB=%%b
-    )
-    del _gpu_info.tmp 2>nul
-    echo        GPU detecte: !GPU_NAME!
+    echo        GPU NVIDIA detecte
 ) else (
-    del _gpu_info.tmp 2>nul
     echo        Pas de GPU NVIDIA detecte - Mode CPU
 )
 
