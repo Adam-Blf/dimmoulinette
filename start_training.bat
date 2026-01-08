@@ -252,32 +252,55 @@ echo.
 python finetune_lora.py --auto-config
 
 echo.
-echo ════════════════════════════════════════════════════════════════════
 if errorlevel 1 (
-    echo   [ERREUR] L'entrainement a echoue
+    echo ╔══════════════════════════════════════════════════════════════════╗
+    echo ║                                                                  ║
+    echo ║   ██╗  ██╗    ███████╗██████╗ ██████╗ ███████╗██╗   ██╗██████╗   ║
+    echo ║   ╚██╗██╔╝    ██╔════╝██╔══██╗██╔══██╗██╔════╝██║   ██║██╔══██╗  ║
+    echo ║    ╚███╔╝     █████╗  ██████╔╝██████╔╝█████╗  ██║   ██║██████╔╝  ║
+    echo ║    ██╔██╗     ██╔══╝  ██╔══██╗██╔══██╗██╔══╝  ██║   ██║██╔══██╗  ║
+    echo ║   ██╔╝ ██╗    ███████╗██║  ██║██║  ██║███████╗╚██████╔╝██║  ██║  ║
+    echo ║   ╚═╝  ╚═╝    ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝  ║
+    echo ║                                                                  ║
+    echo ║                  ENTRAINEMENT ECHOUE                             ║
+    echo ╚══════════════════════════════════════════════════════════════════╝
     echo.
     echo   Causes possibles:
-    echo     - Memoire GPU insuffisante (reduisez batch_size)
+    echo     - Memoire GPU insuffisante ^(reduisez batch_size^)
     echo     - Dataset manquant ou invalide
     echo     - Dependances manquantes
     echo.
     echo   Pour reduire l'utilisation memoire, editez training_config.json:
     echo     - batch_size: 1
     echo     - max_seq_length: 128
+    echo.
 ) else (
-    echo   [OK] ENTRAINEMENT TERMINE AVEC SUCCES!
     echo.
-    echo   Les adaptateurs LoRA sont sauvegardes dans:
-    echo     models\adapters\final_adapter\
+    echo ╔══════════════════════════════════════════════════════════════════╗
+    echo ║                                                                  ║
+    echo ║   ███████╗██╗   ██╗ ██████╗ ██████╗███████╗███████╗██╗██╗        ║
+    echo ║   ██╔════╝██║   ██║██╔════╝██╔════╝██╔════╝██╔════╝██║██║        ║
+    echo ║   ███████╗██║   ██║██║     ██║     █████╗  ███████╗██║██║        ║
+    echo ║   ╚════██║██║   ██║██║     ██║     ██╔══╝  ╚════██║╚═╝╚═╝        ║
+    echo ║   ███████║╚██████╔╝╚██████╗╚██████╗███████╗███████║██╗██╗        ║
+    echo ║   ╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝╚══════╝╚══════╝╚═╝╚═╝        ║
+    echo ║                                                                  ║
+    echo ║          ENTRAINEMENT TERMINE AVEC SUCCES !                      ║
+    echo ║                                                                  ║
+    echo ╠══════════════════════════════════════════════════════════════════╣
+    echo ║                                                                  ║
+    echo ║   Adaptateurs LoRA sauvegardes dans:                             ║
+    echo ║     models\adapters\final_adapter\                               ║
+    echo ║                                                                  ║
+    echo ║   Pour tester le modele:                                         ║
+    echo ║     python finetune_lora.py --predict "Patient: P001"            ║
+    echo ║                                                                  ║
+    echo ║   Prochaines etapes:                                             ║
+    echo ║     1. Fusionner les adaptateurs avec le modele de base          ║
+    echo ║     2. Convertir en GGUF pour Ollama                             ║
+    echo ║     3. Creer un Modelfile personnalise                           ║
+    echo ║                                                                  ║
+    echo ╚══════════════════════════════════════════════════════════════════╝
     echo.
-    echo   Pour tester le modele:
-    echo     python finetune_lora.py --predict "Patient: P001, Duree: 5 jours"
-    echo.
-    echo   Pour utiliser avec Ollama:
-    echo     1. Fusionnez les adaptateurs avec le modele de base
-    echo     2. Convertissez en GGUF
-    echo     3. Creez un Modelfile
 )
-echo ════════════════════════════════════════════════════════════════════
-echo.
 pause
