@@ -1,0 +1,23 @@
+{
+  "version": "2024",
+  "type": "VID-HOSP",
+  "description": "Fichier de chaînage VID-HOSP - Anonymisation des séjours",
+  "encoding": "utf-8",
+  "line_length": 150,
+  "fields": [
+    {"name": "FINESS_PMSI", "start": 1, "end": 9, "type": "string", "description": "FINESS PMSI de l'établissement"},
+    {"name": "NO_SEJOUR_PMSI", "start": 10, "end": 29, "type": "string", "description": "Numéro de séjour PMSI"},
+    {"name": "NO_ADMINISTRATIF", "start": 30, "end": 49, "type": "string", "description": "Numéro administratif local"},
+    {"name": "CLE_CHAINAGE", "start": 50, "end": 77, "type": "string", "description": "Clé de chaînage anonymisée"},
+    {"name": "CODE_RETOUR", "start": 78, "end": 79, "type": "string", "description": "Code retour de l'anonymisation"},
+    {"name": "DATE_NAISSANCE_REEL", "start": 80, "end": 87, "type": "date", "format": "%Y%m%d", "description": "Date naissance réelle"},
+    {"name": "SEXE", "start": 88, "end": 88, "type": "string", "description": "Sexe"},
+    {"name": "DATE_ENTREE", "start": 89, "end": 96, "type": "date", "format": "%Y%m%d", "description": "Date d'entrée"},
+    {"name": "DATE_SORTIE", "start": 97, "end": 104, "type": "date", "format": "%Y%m%d", "description": "Date de sortie"},
+    {"name": "CODE_POSTAL", "start": 105, "end": 109, "type": "string", "description": "Code postal"},
+    {"name": "FILLER", "start": 110, "end": 150, "type": "string", "description": "Zone réservée"}
+  ],
+  "key_fields": ["NO_SEJOUR_PMSI", "CLE_CHAINAGE"],
+  "date_fields": ["DATE_NAISSANCE_REEL", "DATE_ENTREE", "DATE_SORTIE"],
+  "required_fields": ["FINESS_PMSI", "NO_SEJOUR_PMSI"]
+}

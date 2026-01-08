@@ -1,0 +1,48 @@
+{
+  "version": "2024",
+  "type": "RSF-ACE",
+  "description": "Résumé Standard de Facturation - Actes et Consultations Externes",
+  "encoding": "utf-8",
+  "line_length": 300,
+  "record_types": {
+    "A": "En-tête de facture",
+    "B": "Prestation PH",
+    "C": "Acte CCAM",
+    "H": "Médicament",
+    "L": "Prestation NGAP",
+    "M": "Acte et consultation externe",
+    "P": "Prothèse"
+  },
+  "fields_type_A": [
+    {"name": "TYPE_ENREG", "start": 1, "end": 1, "type": "string", "description": "Type d'enregistrement (A)"},
+    {"name": "FINESS_PMSI", "start": 2, "end": 10, "type": "string", "description": "FINESS PMSI"},
+    {"name": "FINESS_GEO", "start": 11, "end": 19, "type": "string", "description": "FINESS géographique"},
+    {"name": "NO_FACTURE", "start": 20, "end": 39, "type": "string", "description": "Numéro de facture"},
+    {"name": "NO_PATIENT", "start": 40, "end": 59, "type": "string", "description": "Numéro patient"},
+    {"name": "DATE_NAISSANCE", "start": 60, "end": 67, "type": "date", "format": "%Y%m%d", "description": "Date naissance"},
+    {"name": "SEXE", "start": 68, "end": 68, "type": "string", "description": "Sexe"},
+    {"name": "CODE_POSTAL", "start": 69, "end": 73, "type": "string", "description": "Code postal"},
+    {"name": "DATE_SOINS", "start": 74, "end": 81, "type": "date", "format": "%Y%m%d", "description": "Date des soins"},
+    {"name": "CODE_GRAND_REGIME", "start": 82, "end": 83, "type": "string", "description": "Code grand régime"},
+    {"name": "TYPE_CONTRAT", "start": 84, "end": 85, "type": "string", "description": "Type contrat"},
+    {"name": "JUSTIF_EXONERATION", "start": 86, "end": 86, "type": "string", "description": "Justification exonération TM"},
+    {"name": "FILLER", "start": 87, "end": 300, "type": "string", "description": "Zone réservée"}
+  ],
+  "fields_type_C": [
+    {"name": "TYPE_ENREG", "start": 1, "end": 1, "type": "string", "description": "Type d'enregistrement (C)"},
+    {"name": "NO_FACTURE", "start": 2, "end": 21, "type": "string", "description": "Numéro de facture"},
+    {"name": "CODE_ACTE", "start": 22, "end": 28, "type": "string", "description": "Code acte CCAM"},
+    {"name": "PHASE", "start": 29, "end": 29, "type": "string", "description": "Phase"},
+    {"name": "ACTIVITE", "start": 30, "end": 30, "type": "string", "description": "Activité"},
+    {"name": "EXTENSION_DOC", "start": 31, "end": 31, "type": "string", "description": "Extension documentaire"},
+    {"name": "DATE_ACTE", "start": 32, "end": 39, "type": "date", "format": "%Y%m%d", "description": "Date de l'acte"},
+    {"name": "QUANTITE", "start": 40, "end": 42, "type": "integer", "description": "Quantité"},
+    {"name": "MODIFICATEURS", "start": 43, "end": 46, "type": "string", "description": "Modificateurs"},
+    {"name": "COEFFICIENT", "start": 47, "end": 52, "type": "decimal", "description": "Coefficient"},
+    {"name": "MONTANT_BASE", "start": 53, "end": 62, "type": "decimal", "description": "Montant de base"},
+    {"name": "FILLER", "start": 63, "end": 300, "type": "string", "description": "Zone réservée"}
+  ],
+  "key_fields": ["NO_FACTURE", "NO_PATIENT"],
+  "date_fields": ["DATE_NAISSANCE", "DATE_SOINS", "DATE_ACTE"],
+  "required_fields": ["TYPE_ENREG", "FINESS_PMSI", "NO_FACTURE"]
+}

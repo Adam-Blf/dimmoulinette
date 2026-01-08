@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIM - Data Intelligence Medicale</title>
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-light: #2d5a8a;
+            --primary-dark: #0f2840;
+            --accent: #4a90d9;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --background: #f5f7fa;
+            --surface: #ffffff;
+            --text: #2c3e50;
+            --text-light: #6c757d;
+            --border: #dee2e6;
+            --ai-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { display: flex; align-items: center; gap: 1rem; }
+        .logo h1 { font-size: 1.5rem; }
+        .logo span { font-size: 0.85rem; opacity: 0.8; }
+
+        .header-badges { display: flex; gap: 0.5rem; }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge.ai { background: var(--ai-gradient); }
+        .status-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+        }
+        .status-badge .dot.offline { background: #dc3545; }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .card.wide { grid-column: span 2; }
+        .card.full { grid-column: span 3; }
+        .card.ai-card { border: 2px solid #667eea; }
+
+        .card-header {
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header.ai { background: var(--ai-gradient); }
+
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .card-body { padding: 1.2rem; }
+
+        /* ===== DROP ZONE ===== */
+        .drop-zone {
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+
+        .drop-zone.dragover {
+            border-color: var(--success);
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            transform: scale(1.02);
+        }
+
+        .drop-zone.processing {
+            border-color: var(--warning);
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+        }
+
+        .drop-zone-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .drop-zone h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .drop-zone p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .drop-zone input[type="file"] {
+            display: none;
+        }
+
+        /* ===== STATS ===== */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-box {
+            background: var(--background);
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-box .label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+
+        .stat-box.rps .value { color: var(--danger); }
+        .stat-box.raa .value { color: var(--warning); }
+        .stat-box.success .value { color: var(--success); }
+        .stat-box.ai .value { color: #667eea; }
+
+        /* ===== FILE LIST ===== */
+        .file-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .file-item:last-child { border-bottom: none; }
+        .file-item:hover { background: var(--background); }
+        .file-item input { margin-right: 0.8rem; }
+        .file-item .name { flex: 1; }
+
+        .file-type {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .file-type.RPS { background: #fce4ec; color: var(--danger); }
+        .file-type.RAA { background: #fff3e0; color: #e65100; }
+        .file-type.VID_HOSP { background: #e3f2fd; color: var(--accent); }
+        .file-type.UNKNOWN { background: #f5f5f5; color: var(--text-light); }
+
+        .file-size { color: var(--text-light); font-size: 0.75rem; }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover { transform: translateY(-1px); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-warning { background: var(--warning); color: #333; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-secondary { background: var(--text-light); color: white; }
+        .btn-ai { background: var(--ai-gradient); color: white; }
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
+
+        .btn-group { display: flex; gap: 0.5rem; margin-top: 1rem; }
+
+        /* ===== FORMS ===== */
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--text);
+        }
+
+        .input-group select,
+        .input-group input {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        /* ===== CONSOLE ===== */
+        .console {
+            background: #1e1e1e;
+            border-radius: 6px;
+            padding: 1rem;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.8rem;
+        }
+
+        .log-line { color: #d4d4d4; padding: 0.1rem 0; }
+        .log-line.success { color: #4ec9b0; }
+        .log-line.error { color: #f48771; }
+        .log-line.warning { color: #dcdcaa; }
+        .log-line.ai { color: #c586c0; }
+
+        /* ===== AI ANALYSIS ===== */
+        .ai-result {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+            border: 1px solid #c4b5fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .ai-result h4 {
+            color: #7c3aed;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .ai-result .analysis {
+            font-size: 0.85rem;
+            color: var(--text);
+            white-space: pre-wrap;
+        }
+
+        .ai-result.anomaly {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-color: #fca5a5;
+        }
+
+        .ai-result.anomaly h4 { color: var(--danger); }
+
+        /* ===== TABLES ===== */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 0.6rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .results-table th {
+            background: var(--background);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .results-table tr.anomaly { background: #ffeaea; }
+        .results-table tr.anomaly td { color: var(--danger); }
+        .results-table tr.ai-anomaly { background: #f5f3ff; }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 0.3rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            background: none;
+            border: none;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .tab:hover { background: var(--background); }
+        .tab.active { background: var(--primary); color: white; }
+        .tab.ai-tab.active { background: var(--ai-gradient); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ===== ALERTS ===== */
+        .alert {
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .alert-info { background: #d1ecf1; color: #0c5460; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-warning { background: #fff3cd; color: #856404; }
+        .alert-ai { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); color: #5b21b6; }
+
+        /* ===== SPINNER ===== */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .btn.loading .spinner { display: inline-block; }
+        .btn.loading .btn-text { display: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== PROGRESS ===== */
+        .progress {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--ai-gradient);
+            transition: width 0.3s ease;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 1200px) {
+            .container { grid-template-columns: repeat(2, 1fr); }
+            .card.wide, .card.full { grid-column: span 2; }
+        }
+
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+            .card.wide, .card.full { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div>
+                    <h1>DIM - Data Intelligence Medicale</h1>
+                    <span>Moulinettes PMSI + IA locale - 100% securise</span>
+                </div>
+            </div>
+            <div class="header-badges">
+                <div class="status-badge ai" id="aiStatus">
+                    <span class="dot offline" id="aiDot"></span>
+                    <span id="aiStatusText">IA: Chargement...</span>
+                </div>
+                <div class="status-badge" id="systemStatus">En ligne</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Zone de Drop Principal -->
+        <div class="card wide ai-card">
+            <div class="card-header ai">
+                <h2>Deposer un fichier PMSI pour analyse IA</h2>
+            </div>
+            <div class="card-body">
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">+</div>
+                    <h3>Glissez-deposez votre fichier PMSI ici</h3>
+                    <p>ou cliquez pour selectionner (.txt, .csv)</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.8rem; color: #667eea;">
+                        L'IA analysera automatiquement les anomalies
+                    </p>
+                    <input type="file" id="fileInput" accept=".txt,.csv,.tsv">
+                </div>
+
+                <div id="uploadProgress" style="display: none;">
+                    <div class="alert alert-ai">
+                        <strong id="progressStatus">Traitement en cours...</strong>
+                        <div class="progress">
+                            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="aiAnalysisResult" style="display: none;">
+                    <!-- Resultats IA ici -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Statut IA -->
+        <div class="card">
+            <div class="card-header ai"><h2>Moteur IA Local</h2></div>
+            <div class="card-body">
+                <div class="stats-row" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="stat-box ai"><div class="value" id="aiBackend">-</div><div class="label">Backend</div></div>
+                    <div class="stat-box ai"><div class="value" id="aiModel">-</div><div class="label">Modele</div></div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-ai" onclick="initAI()" id="btnInitAI">
+                        <span class="spinner"></span>
+                        <span class="btn-text">Charger IA</span>
+                    </button>
+                    <button class="btn btn-success" onclick="createDimModel()" id="btnCreateModel">
+                        <span class="spinner"></span>
+                        <span class="btn-text">Creer modele DIM-PMSI</span>
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-warning" onclick="trainModel()" id="btnTrain">
+                        <span class="spinner"></span>
+                        <span class="btn-text">Fine-tuning GPU</span>
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="downloadModel()">Autre modele</button>
+                </div>
+                <div class="alert alert-ai" style="margin-top: 1rem;" id="aiHelp">
+                    <strong>Premiere utilisation?</strong><br>
+                    1. Installez <a href="https://ollama.ai/download" target="_blank">Ollama</a><br>
+                    2. Cliquez sur "Creer modele DIM-PMSI"<br>
+                    3. Puis "Charger IA" pour commencer l'analyse
+                </div>
+                <div id="availableModels" style="margin-top: 0.5rem; display: none;">
+                    <small style="color: var(--text-light);">Modeles disponibles: <span id="modelList">-</span></small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fichiers Source -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Fichiers Source</h2>
+                <button class="btn btn-sm btn-secondary" onclick="loadFiles()">Actualiser</button>
+            </div>
+            <div class="card-body">
+                <div class="stats-row">
+                    <div class="stat-box rps"><div class="value" id="rpsCount">-</div><div class="label">RPS</div></div>
+                    <div class="stat-box raa"><div class="value" id="raaCount">-</div><div class="label">RAA</div></div>
+                    <div class="stat-box"><div class="value" id="otherCount">-</div><div class="label">Autres</div></div>
+                    <div class="stat-box"><div class="value" id="totalCount">-</div><div class="label">Total</div></div>
+                </div>
+                <div class="file-list" id="fileList">
+                    <div class="file-item"><span>Chargement...</span></div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="runETL()" id="btnETL">
+                        <span class="spinner"></span>
+                        <span class="btn-text">Lancer Moulinettes</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Episodes PSY -->
+        <div class="card">
+            <div class="card-header"><h2>Episodes Ambulatoires PSY</h2></div>
+            <div class="card-body">
+                <div class="input-group">
+                    <label>Fichier RAA</label>
+                    <select id="raaSelect"><option value="">Selectionner...</option></select>
+                </div>
+                <div class="input-group">
+                    <label>Seuil anomalie (jours)</label>
+                    <input type="number" id="seuilDuree" value="1" min="1">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-warning" onclick="runEpisodes()" id="btnEpisodes">
+                        <span class="spinner"></span>
+                        <span class="btn-text">Generer Episodes</span>
+                    </button>
+                    <button class="btn btn-ai btn-sm" onclick="analyzeEpisodesAI()" id="btnAnalyzeAI">
+                        Analyser avec IA
+                    </button>
+                </div>
+                <div id="episodeStats" style="margin-top: 1rem; display: none;">
+                    <div class="stats-row" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="stat-box"><div class="value" id="nbEpisodes">-</div><div class="label">Episodes</div></div>
+                        <div class="stat-box success"><div class="value" id="nbAnomalies">-</div><div class="label">Anomalies</div></div>
+                        <div class="stat-box ai"><div class="value" id="nbAIAnomalies">-</div><div class="label">IA Detectees</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Console Logs -->
+        <div class="card wide">
+            <div class="card-header">
+                <h2>Console</h2>
+                <button class="btn btn-sm btn-secondary" onclick="clearLogs()">Effacer</button>
+            </div>
+            <div class="card-body">
+                <div class="console" id="console">
+                    <div class="log-line">En attente...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Structure GHT -->
+        <div class="card">
+            <div class="card-header"><h2>Structure GHT (FICOM)</h2></div>
+            <div class="card-body">
+                <div class="input-group">
+                    <label>Fichier Excel</label>
+                    <select id="ghtSelect"><option value="">Selectionner...</option></select>
+                </div>
+                <div class="input-group">
+                    <label>Format sortie</label>
+                    <select id="ghtFormat">
+                        <option value="png">PNG</option>
+                        <option value="svg">SVG</option>
+                        <option value="pdf">PDF</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="runGHT()" id="btnGHT">
+                        <span class="spinner"></span>
+                        <span class="btn-text">Generer Graphe</span>
+                    </button>
+                </div>
+                <div id="ghtResults" style="margin-top: 1rem; display: none;">
+                    <div class="alert alert-success">
+                        Graphe genere! <a href="#" id="ghtDownload" target="_blank">Voir HTML</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultats -->
+        <div class="card full">
+            <div class="card-header"><h2>Resultats</h2></div>
+            <div class="card-body">
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('tabETL')">ETL</button>
+                    <button class="tab" onclick="showTab('tabAnomalies')">Anomalies</button>
+                    <button class="tab ai-tab" onclick="showTab('tabAI')">Analyse IA</button>
+                    <button class="tab" onclick="showTab('tabGHT')">Structure GHT</button>
+                </div>
+
+                <div id="tabETL" class="tab-content active">
+                    <table class="results-table">
+                        <thead><tr><th>Fichier</th><th>Lignes</th><th>Statut</th></tr></thead>
+                        <tbody id="etlResults"><tr><td colspan="3" style="text-align:center">Aucun resultat</td></tr></tbody>
+                    </table>
+                </div>
+
+                <div id="tabAnomalies" class="tab-content">
+                    <table class="results-table">
+                        <thead><tr><th>Episode ID</th><th>Patient</th><th>Duree (j)</th><th>Anomalie</th></tr></thead>
+                        <tbody id="anomaliesResults"><tr><td colspan="4" style="text-align:center">Aucune anomalie</td></tr></tbody>
+                    </table>
+                </div>
+
+                <div id="tabAI" class="tab-content">
+                    <div id="aiResultsList">
+                        <p style="text-align: center; color: var(--text-light);">
+                            Deposez un fichier ou lancez une analyse pour voir les resultats IA
+                        </p>
+                    </div>
+                </div>
+
+                <div id="tabGHT" class="tab-content">
+                    <table class="results-table">
+                        <thead><tr><th>ID</th><th>Nom</th><th>Type</th></tr></thead>
+                        <tbody id="ghtNodesResults"><tr><td colspan="3" style="text-align:center">Aucune structure</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>DIM - Donnees HDS securisees | Traitement 100% local | IA embarquee</footer>
+
+    <script>
+        let files = [];
+        let eventSource = null;
+        let aiReady = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFiles();
+            loadSystem();
+            checkAIStatus();
+            loadAvailableModels();
+            connectLogs();
+            setupDropZone();
+            setInterval(checkStatus, 5000);
+        });
+
+        // ===== DROP ZONE =====
+        function setupDropZone() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+        }
+
+        async function handleFileUpload(file) {
+            const dropZone = document.getElementById('dropZone');
+            const progress = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            const progressStatus = document.getElementById('progressStatus');
+
+            dropZone.classList.add('processing');
+            progress.style.display = 'block';
+            progressBar.style.width = '10%';
+            progressStatus.textContent = 'Upload du fichier...';
+
+            addLog('Fichier depose: ' + file.name, 'ai');
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                // 1. Upload
+                progressBar.style.width = '20%';
+                progressStatus.textContent = 'Traitement ETL...';
+
+                const uploadRes = await fetch('/api/upload/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await uploadRes.json();
+
+                if (result.status === 'success') {
+                    progressBar.style.width = '100%';
+                    progressStatus.textContent = 'Analyse terminee!';
+
+                    addLog('ETL termine: ' + result.rows_processed + ' lignes', 'success');
+
+                    if (result.ai_analysis) {
+                        displayAIResults(result.ai_analysis);
+                        addLog('IA: ' + result.ai_analysis.summary, 'ai');
+                    }
+
+                    // Afficher les resultats
+                    showTab('tabAI');
+
+                } else {
+                    throw new Error(result.message || 'Erreur inconnue');
+                }
+
+            } catch (e) {
+                addLog('Erreur: ' + e.message, 'error');
+                progressStatus.textContent = 'Erreur: ' + e.message;
+            } finally {
+                dropZone.classList.remove('processing');
+                setTimeout(() => {
+                    progress.style.display = 'none';
+                    progressBar.style.width = '0%';
+                }, 3000);
+            }
+        }
+
+        function displayAIResults(analysis) {
+            const container = document.getElementById('aiResultsList');
+
+            let html = '';
+
+            if (analysis.episodes && analysis.episodes.length > 0) {
+                html += '<table class="results-table">';
+                html += '<thead><tr><th>Episode</th><th>Duree</th><th>Analyse IA</th><th>Anomalie</th></tr></thead>';
+                html += '<tbody>';
+
+                analysis.episodes.slice(0, 50).forEach(ep => {
+                    const rowClass = ep.is_anomaly ? 'ai-anomaly' : '';
+                    html += `<tr class="${rowClass}">
+                        <td>${ep.episode_id || '-'}</td>
+                        <td>${ep.duree || '-'} j</td>
+                        <td style="max-width: 400px; font-size: 0.8rem;">${ep.analysis || '-'}</td>
+                        <td>${ep.is_anomaly ? 'OUI' : 'Non'}</td>
+                    </tr>`;
+                });
+
+                html += '</tbody></table>';
+            }
+
+            if (analysis.summary) {
+                html += `<div class="ai-result" style="margin-top: 1rem;">
+                    <h4>Resume IA</h4>
+                    <div class="analysis">${analysis.summary}</div>
+                </div>`;
+            }
+
+            container.innerHTML = html || '<p>Aucune analyse disponible</p>';
+
+            // Update stats
+            document.getElementById('episodeStats').style.display = 'block';
+            document.getElementById('nbAIAnomalies').textContent = analysis.anomalies_count || 0;
+        }
+
+        // ===== AI STATUS =====
+        async function checkAIStatus() {
+            try {
+                const res = await fetch('/api/ai/status');
+                const data = await res.json();
+
+                const dot = document.getElementById('aiDot');
+                const text = document.getElementById('aiStatusText');
+                const backend = document.getElementById('aiBackend');
+                const model = document.getElementById('aiModel');
+
+                if (data.available || data.model_loaded) {
+                    dot.classList.remove('offline');
+                    text.textContent = 'IA: Pret';
+                    aiReady = true;
+                    document.getElementById('aiHelp').style.display = 'none';
+                } else {
+                    dot.classList.add('offline');
+                    text.textContent = 'IA: Non connecte';
+                    aiReady = false;
+                }
+
+                backend.textContent = data.backend || 'N/A';
+                model.textContent = data.current_model?.split(':')[0] || 'N/A';
+
+            } catch(e) {
+                document.getElementById('aiDot').classList.add('offline');
+                document.getElementById('aiStatusText').textContent = 'IA: Erreur';
+            }
+        }
+
+        async function initAI() {
+            setLoading('btnInitAI', true);
+            addLog('Initialisation de l\'IA...', 'ai');
+
+            try {
+                const res = await fetch('/api/ai/init', { method: 'POST' });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    addLog('IA initialisee: ' + data.model, 'success');
+                    await checkAIStatus();
+                } else {
+                    addLog('Erreur IA: ' + data.message, 'error');
+                }
+            } catch(e) {
+                addLog('Erreur: ' + e.message, 'error');
+            } finally {
+                setLoading('btnInitAI', false);
+            }
+        }
+
+        async function downloadModel() {
+            const model = prompt('Nom du modele a telecharger:', 'mistral:7b-instruct');
+            if (!model) return;
+
+            addLog('Telechargement du modele: ' + model, 'ai');
+
+            try {
+                const res = await fetch('/api/ai/download', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({model: model})
+                });
+                const data = await res.json();
+                addLog(data.message, data.status === 'success' ? 'success' : 'error');
+            } catch(e) {
+                addLog('Erreur: ' + e.message, 'error');
+            }
+        }
+
+        async function createDimModel() {
+            setLoading('btnCreateModel', true);
+            addLog('Creation du modele DIM-PMSI personnalise...', 'ai');
+            addLog('(Cela peut prendre plusieurs minutes si le modele de base doit etre telecharge)', 'warning');
+
+            try {
+                const res = await fetch('/api/ai/create-model', { method: 'POST' });
+                const data = await res.json();
+
+                if (data.status === 'started') {
+                    addLog('Creation du modele en cours...', 'ai');
+                    // Poll for completion
+                    pollModelCreation();
+                } else {
+                    addLog('Erreur: ' + data.message, 'error');
+                    setLoading('btnCreateModel', false);
+                }
+            } catch(e) {
+                addLog('Erreur: ' + e.message, 'error');
+                setLoading('btnCreateModel', false);
+            }
+        }
+
+        async function pollModelCreation() {
+            const maxAttempts = 60; // 5 minutes max
+            let attempts = 0;
+
+            const checkInterval = setInterval(async () => {
+                attempts++;
+
+                try {
+                    const res = await fetch('/api/results/create_model');
+                    const data = await res.json();
+
+                    if (data.status === 'success') {
+                        clearInterval(checkInterval);
+                        addLog('Modele dim-pmsi cree avec succes!', 'success');
+                        setLoading('btnCreateModel', false);
+                        await checkAIStatus();
+                        await loadAvailableModels();
+                    } else if (data.status === 'error') {
+                        clearInterval(checkInterval);
+                        addLog('Erreur: ' + data.message, 'error');
+                        setLoading('btnCreateModel', false);
+                    }
+                } catch(e) {
+                    // Continue polling
+                }
+
+                if (attempts >= maxAttempts) {
+                    clearInterval(checkInterval);
+                    addLog('Timeout: La creation du modele prend trop de temps', 'warning');
+                    setLoading('btnCreateModel', false);
+                }
+            }, 5000);
+        }
+
+        async function loadAvailableModels() {
+            try {
+                const res = await fetch('/api/ai/models');
+                const data = await res.json();
+
+                if (data.status === 'success' && data.models.length > 0) {
+                    const modelNames = data.models.map(m => m.name).join(', ');
+                    document.getElementById('modelList').textContent = modelNames;
+                    document.getElementById('availableModels').style.display = 'block';
+
+                    if (data.has_dim_model) {
+                        document.getElementById('btnCreateModel').textContent = 'Modele DIM-PMSI pret';
+                        document.getElementById('btnCreateModel').disabled = true;
+                    }
+                }
+            } catch(e) {
+                console.log('Could not load models');
+            }
+        }
+
+        async function trainModel() {
+            const epochs = prompt('Nombre d\'epochs pour l\'entrainement:', '3');
+            if (!epochs) return;
+
+            setLoading('btnTrain', true);
+            addLog('Demarrage de l\'entrainement...', 'ai');
+
+            try {
+                // Check requirements first
+                const checkRes = await fetch('/api/ai/training/check');
+                const checkData = await checkRes.json();
+
+                if (checkData.cuda) {
+                    addLog('GPU detecte: ' + checkData.gpu_name + ' - Fine-tuning QLoRA', 'success');
+                } else {
+                    addLog('Pas de GPU - Creation d\'un modele Ollama personnalise', 'warning');
+                }
+
+                // Start training
+                const res = await fetch('/api/ai/training/start', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        epochs: parseInt(epochs),
+                        create_ollama: true
+                    })
+                });
+                const data = await res.json();
+
+                if (data.status === 'started') {
+                    addLog('Entrainement demarre - Suivez la progression dans la console', 'ai');
+                } else {
+                    addLog('Erreur: ' + data.message, 'error');
+                }
+            } catch(e) {
+                addLog('Erreur: ' + e.message, 'error');
+            } finally {
+                setLoading('btnTrain', false);
+            }
+        }
+
+        async function analyzeEpisodesAI() {
+            if (!aiReady) {
+                addLog('Veuillez d\'abord initialiser l\'IA', 'warning');
+                return;
+            }
+
+            const file = document.getElementById('raaSelect').value;
+            if (!file) {
+                addLog('Selectionnez un fichier RAA', 'warning');
+                return;
+            }
+
+            setLoading('btnAnalyzeAI', true);
+            addLog('Analyse IA des episodes...', 'ai');
+
+            try {
+                const res = await fetch('/api/ai/analyze-file', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({file: file})
+                });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    displayAIResults(data);
+                    addLog('Analyse terminee: ' + data.anomalies_count + ' anomalies detectees', 'success');
+                    showTab('tabAI');
+                } else {
+                    addLog('Erreur: ' + data.message, 'error');
+                }
+            } catch(e) {
+                addLog('Erreur: ' + e.message, 'error');
+            } finally {
+                setLoading('btnAnalyzeAI', false);
+            }
+        }
+
+        // ===== FILES =====
+        async function loadFiles() {
+            try {
+                const res = await fetch('/api/files');
+                const data = await res.json();
+                if (data.status === 'success') {
+                    files = data.files;
+                    renderFiles(files);
+                    updateSelects(files);
+                    document.getElementById('totalCount').textContent = files.length;
+                    document.getElementById('rpsCount').textContent = data.summary.RPS || 0;
+                    document.getElementById('raaCount').textContent = data.summary.RAA || 0;
+                    document.getElementById('otherCount').textContent = (data.summary.VID_HOSP || 0) + (data.summary.UNKNOWN || 0);
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function renderFiles(files) {
+            const list = document.getElementById('fileList');
+            list.innerHTML = files.map(f => `
+                <div class="file-item">
+                    <input type="checkbox" value="${f.name}" class="file-cb">
+                    <span class="name">${f.name}</span>
+                    <span class="file-type ${f.type}">${f.type}</span>
+                    <span class="file-size">${f.size_mb} MB</span>
+                </div>
+            `).join('');
+        }
+
+        function updateSelects(files) {
+            const raaFiles = files.filter(f => f.type === 'RAA');
+            const excelFiles = files.filter(f => f.name.endsWith('.xlsx') || f.name.endsWith('.xls'));
+
+            document.getElementById('raaSelect').innerHTML =
+                '<option value="">Selectionner...</option>' +
+                raaFiles.map(f => `<option value="${f.name}">${f.name}</option>`).join('');
+
+            document.getElementById('ghtSelect').innerHTML =
+                '<option value="">Selectionner...</option>' +
+                excelFiles.map(f => `<option value="${f.name}">${f.name}</option>`).join('');
+        }
+
+        async function loadSystem() {
+            try {
+                const res = await fetch('/api/system');
+                const data = await res.json();
+                updateButtons(data);
+            } catch(e) {}
+        }
+
+        function updateButtons(data) {
+            document.getElementById('btnETL').disabled = data.etl_running;
+            document.getElementById('btnEpisodes').disabled = data.episodes_running;
+            document.getElementById('btnGHT').disabled = data.ght_running;
+
+            const status = document.getElementById('systemStatus');
+            if (data.etl_running || data.episodes_running || data.ght_running) {
+                status.textContent = 'En cours...';
+                status.style.background = 'rgba(255,193,7,0.3)';
+            } else {
+                status.textContent = 'En ligne';
+                status.style.background = 'rgba(255,255,255,0.2)';
+            }
+        }
+
+        // ===== ACTIONS =====
+        async function runETL() {
+            const selected = Array.from(document.querySelectorAll('.file-cb:checked')).map(c => c.value);
+            setLoading('btnETL', true);
+            try {
+                const res = await fetch('/api/etl/run', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({files: selected, force_reprocess: false})
+                });
+                const data = await res.json();
+                addLog(data.message);
+                loadSystem();
+            } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
+            finally { setLoading('btnETL', false); }
+        }
+
+        async function runEpisodes() {
+            const file = document.getElementById('raaSelect').value;
+            const seuil = parseInt(document.getElementById('seuilDuree').value);
+            if (!file) { addLog('Selectionnez un fichier RAA', 'warning'); return; }
+            setLoading('btnEpisodes', true);
+            try {
+                const res = await fetch('/api/episodes/run', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({input_file: file, seuil_duree: seuil, max_gap: 1})
+                });
+                const data = await res.json();
+                addLog(data.message);
+                loadSystem();
+            } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
+            finally { setLoading('btnEpisodes', false); }
+        }
+
+        async function runGHT() {
+            const file = document.getElementById('ghtSelect').value;
+            const format = document.getElementById('ghtFormat').value;
+            if (!file) { addLog('Selectionnez un fichier Excel', 'warning'); return; }
+            setLoading('btnGHT', true);
+            try {
+                const res = await fetch('/api/ght/run', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({excel_file: file, output_format: format})
+                });
+                const data = await res.json();
+                addLog(data.message);
+                loadSystem();
+            } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
+            finally { setLoading('btnGHT', false); }
+        }
+
+        function setLoading(btnId, loading) {
+            const btn = document.getElementById(btnId);
+            if (loading) btn.classList.add('loading');
+            else btn.classList.remove('loading');
+            btn.disabled = loading;
+        }
+
+        // ===== LOGS =====
+        function connectLogs() {
+            eventSource = new EventSource('/api/logs/stream');
+            eventSource.onmessage = (e) => {
+                const data = JSON.parse(e.data);
+                addLog(data.log);
+                checkResults();
+            };
+            eventSource.onerror = () => setTimeout(connectLogs, 5000);
+        }
+
+        function addLog(msg, type = 'info') {
+            const consoleEl = document.getElementById('console');
+            const line = document.createElement('div');
+            line.className = 'log-line ' + type;
+            line.textContent = msg;
+            consoleEl.appendChild(line);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        async function clearLogs() {
+            await fetch('/api/logs', {method: 'DELETE'});
+            document.getElementById('console').innerHTML = '<div class="log-line">Logs effaces</div>';
+        }
+
+        // ===== RESULTS =====
+        async function checkResults() {
+            try {
+                const res = await fetch('/api/results');
+                const data = await res.json();
+
+                if (data.etl && data.etl.results) renderETLResults(data.etl.results);
+                if (data.episodes) renderEpisodeResults(data.episodes);
+                if (data.ght) renderGHTResults(data.ght);
+            } catch(e) {}
+        }
+
+        function renderETLResults(results) {
+            document.getElementById('etlResults').innerHTML = results.map(r => `
+                <tr>
+                    <td>${r.file}</td>
+                    <td>${r.rows.toLocaleString()}</td>
+                    <td style="color:${r.status==='success'?'var(--success)':'var(--danger)'}">${r.status}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderEpisodeResults(data) {
+            document.getElementById('episodeStats').style.display = 'block';
+            document.getElementById('nbEpisodes').textContent = data.stats?.nb_episodes || '-';
+            document.getElementById('nbAnomalies').textContent = data.anomalies_count || 0;
+
+            if (data.anomalies && data.anomalies.length > 0) {
+                document.getElementById('anomaliesResults').innerHTML = data.anomalies.slice(0, 50).map(a => `
+                    <tr class="anomaly">
+                        <td>${a.EPISODE_ID || '-'}</td>
+                        <td>${a.NO_PATIENT || '-'}</td>
+                        <td>${a.DUREE_EPISODE_JOURS || '-'}</td>
+                        <td>${a.TYPE_ANOMALIE || 'DUREE_EXCESSIVE'}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function renderGHTResults(data) {
+            document.getElementById('ghtResults').style.display = 'block';
+            if (data.outputs && data.outputs.html) {
+                const filename = data.outputs.html.split(/[\\/]/).pop();
+                document.getElementById('ghtDownload').href = '/api/download/' + filename;
+            }
+            if (data.nodes && data.nodes.length > 0) {
+                document.getElementById('ghtNodesResults').innerHTML = data.nodes.slice(0, 30).map(n => `
+                    <tr><td>${n.id}</td><td>${n.name}</td><td>${n.type}</td></tr>
+                `).join('');
+            }
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        async function checkStatus() {
+            await loadSystem();
+            await checkAIStatus();
+        }
+    </script>
+</body>
+</html>

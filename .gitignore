@@ -1,0 +1,118 @@
+# ============================================
+# .gitignore - DIM - Data Intelligence Médicale
+# SÉCURITÉ DONNÉES DE SANTÉ (PMSI/HDS)
+# ============================================
+
+# ==== DONNÉES SENSIBLES (CRITIQUE) ====
+# Dossier source des données PMSI - JAMAIS dans Git
+C:/Users/adamb/Downloads/frer/
+**/Downloads/frer/
+frer/
+
+# Fichiers de données brutes
+*.csv
+*.tsv
+*.xlsx
+*.xls
+# Ignorer les .txt sauf requirements.txt
+data/*.txt
+frer/*.txt
+!requirements.txt
+
+# Fichiers de données transformées
+*.jsonl
+*.json
+!package.json
+!tsconfig.json
+!configs/*.json
+
+# ==== MODÈLES IA (VOLUMINEUX + SENSIBLES) ====
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.gguf
+*.ggml
+adapters/
+checkpoints/
+*.h5
+
+# Garder le Modelfile mais ignorer les modeles
+models/cache/
+models/adapters/
+models/fine-tuned/
+models/merged_model/
+!models/
+!models/DIM_PMSI_Modelfile
+
+# ==== CACHE & BYTECODE PYTHON ====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ==== ENVIRONNEMENTS VIRTUELS ====
+.env
+.venv/
+env/
+venv/
+ENV/
+.conda/
+*.local
+
+# ==== HUGGINGFACE CACHE ====
+.cache/
+~/.cache/huggingface/
+
+# ==== LOGS & TEMPORAIRES ====
+*.log
+logs/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# ==== IDE ====
+.vscode/
+.idea/
+*.sublime-*
+
+# ==== SÉCURITÉ ====
+# Fichiers de hash/intégrité (contiennent des métadonnées)
+.data_manifest.json
+security_audit.log
+
+# Clés et secrets
+*.pem
+*.key
+secrets.yaml
+.secrets/
+
+# ==== OS ====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==== OUTPUTS DU PROJET ====
+output/
+results/
+exports/
+train_dataset.jsonl

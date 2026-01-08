@@ -1,0 +1,64 @@
+# =============================================================================
+# DIM - Data Intelligence Médicale
+# Projet PMSI All-in-One - Moulinettes DIM
+# =============================================================================
+
+# === PYTORCH (CUDA) ===
+# Installation manuelle recommandée:
+# CUDA 11.8: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# CUDA 12.1: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# CPU: pip install torch torchvision torchaudio
+torch>=2.1.0
+
+# === HUGGINGFACE STACK ===
+transformers>=4.36.0
+accelerate>=0.25.0
+datasets>=2.16.0
+huggingface_hub>=0.20.0
+
+# === FINE-TUNING & QUANTIZATION (QLoRA 4-bit) ===
+peft>=0.7.0
+trl>=0.7.0
+bitsandbytes>=0.42.0
+# Note Windows: pip install bitsandbytes-windows
+
+# === DATA PROCESSING (POLARS - OBLIGATOIRE) ===
+polars>=0.20.0
+pyarrow>=14.0.0
+
+# === EXCEL PROCESSING ===
+openpyxl>=3.1.2
+xlrd>=2.0.1
+
+# === WEB INTERFACE (FastAPI) ===
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+websockets>=12.0
+python-multipart>=0.0.6
+jinja2>=3.1.2
+
+# === VISUALISATION GHT ===
+graphviz>=0.20.1
+networkx>=3.2.1
+matplotlib>=3.8.0
+pillow>=10.2.0
+
+# === UTILITIES ===
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+loguru>=0.7.2
+rich>=13.7.0
+tqdm>=4.66.0
+safetensors>=0.4.0
+sentencepiece>=0.1.99
+protobuf>=4.25.0
+scipy>=1.11.0
+
+# === SECURITY ===
+cryptography>=41.0.0
+
+# === DEVELOPMENT (optionnel) ===
+# black>=23.0.0
+# isort>=5.12.0
+# pytest>=7.4.0
+# mypy>=1.8.0

@@ -1,0 +1,24 @@
+{
+  "version": "2024",
+  "type": "VID-IPP",
+  "description": "Fichier de chaînage VID-IPP - Lien IPP/Anonymat",
+  "encoding": "utf-8",
+  "line_length": 180,
+  "fields": [
+    {"name": "FINESS_PMSI", "start": 1, "end": 9, "type": "string", "description": "FINESS PMSI de l'établissement"},
+    {"name": "IPP_LOCAL", "start": 10, "end": 29, "type": "string", "description": "IPP local de l'établissement"},
+    {"name": "NO_PATIENT_ANO", "start": 30, "end": 49, "type": "string", "description": "Numéro patient anonymisé PMSI"},
+    {"name": "CLE_CHAINAGE", "start": 50, "end": 77, "type": "string", "description": "Clé de chaînage inter-établissement"},
+    {"name": "DATE_CREATION", "start": 78, "end": 85, "type": "date", "format": "%Y%m%d", "description": "Date de création de l'enregistrement"},
+    {"name": "CODE_RETOUR", "start": 86, "end": 87, "type": "string", "description": "Code retour anonymisation"},
+    {"name": "SEXE", "start": 88, "end": 88, "type": "string", "description": "Sexe du patient"},
+    {"name": "DATE_NAISSANCE", "start": 89, "end": 96, "type": "date", "format": "%Y%m%d", "description": "Date de naissance"},
+    {"name": "NOM_NAISS_HASH", "start": 97, "end": 128, "type": "string", "description": "Hash du nom de naissance"},
+    {"name": "PRENOM_HASH", "start": 129, "end": 160, "type": "string", "description": "Hash du prénom"},
+    {"name": "FILLER", "start": 161, "end": 180, "type": "string", "description": "Zone réservée"}
+  ],
+  "key_fields": ["IPP_LOCAL", "NO_PATIENT_ANO", "CLE_CHAINAGE"],
+  "date_fields": ["DATE_CREATION", "DATE_NAISSANCE"],
+  "required_fields": ["FINESS_PMSI", "IPP_LOCAL", "NO_PATIENT_ANO"],
+  "security_note": "Ce fichier contient des données permettant la ré-identification. Niveau de protection maximal requis."
+}

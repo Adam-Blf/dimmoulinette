@@ -1,0 +1,60 @@
+{
+  "version": "2024",
+  "type": "RUM-RSS",
+  "description": "Résumé d'Unité Médicale / Résumé de Sortie Standardisé - MCO",
+  "encoding": "utf-8",
+  "subtypes": {
+    "RUM": {
+      "description": "Résumé d'Unité Médicale",
+      "line_length": 550,
+      "fields": [
+        {"name": "FINESS_PMSI", "start": 1, "end": 9, "type": "string", "description": "FINESS PMSI"},
+        {"name": "FINESS_GEO", "start": 10, "end": 18, "type": "string", "description": "FINESS géographique"},
+        {"name": "NO_RSS", "start": 19, "end": 38, "type": "string", "description": "Numéro RSS"},
+        {"name": "NO_RUM", "start": 39, "end": 48, "type": "string", "description": "Numéro RUM dans le RSS"},
+        {"name": "NO_PATIENT", "start": 49, "end": 68, "type": "string", "description": "Numéro patient anonymisé"},
+        {"name": "DATE_NAISSANCE", "start": 69, "end": 76, "type": "date", "format": "%Y%m%d", "description": "Date de naissance"},
+        {"name": "SEXE", "start": 77, "end": 77, "type": "string", "description": "Sexe"},
+        {"name": "CODE_POSTAL", "start": 78, "end": 82, "type": "string", "description": "Code postal"},
+        {"name": "DATE_ENTREE_UM", "start": 83, "end": 90, "type": "date", "format": "%Y%m%d", "description": "Date entrée dans l'UM"},
+        {"name": "MODE_ENTREE", "start": 91, "end": 91, "type": "string", "description": "Mode d'entrée"},
+        {"name": "PROVENANCE", "start": 92, "end": 92, "type": "string", "description": "Provenance"},
+        {"name": "DATE_SORTIE_UM", "start": 93, "end": 100, "type": "date", "format": "%Y%m%d", "description": "Date sortie de l'UM"},
+        {"name": "MODE_SORTIE", "start": 101, "end": 101, "type": "string", "description": "Mode de sortie"},
+        {"name": "DESTINATION", "start": 102, "end": 102, "type": "string", "description": "Destination"},
+        {"name": "CODE_UM", "start": 103, "end": 106, "type": "string", "description": "Code unité médicale"},
+        {"name": "TYPE_AUTORISATION", "start": 107, "end": 108, "type": "string", "description": "Type autorisation UM"},
+        {"name": "DP", "start": 109, "end": 116, "type": "string", "description": "Diagnostic principal"},
+        {"name": "DR", "start": 117, "end": 124, "type": "string", "description": "Diagnostic relié"},
+        {"name": "NB_DA", "start": 125, "end": 127, "type": "integer", "description": "Nombre de diagnostics associés"},
+        {"name": "DA_LIST", "start": 128, "end": 287, "type": "string", "description": "Liste des DA (20 x 8 car)"},
+        {"name": "NB_ACTES", "start": 288, "end": 290, "type": "integer", "description": "Nombre d'actes"},
+        {"name": "ACTES_LIST", "start": 291, "end": 550, "type": "string", "description": "Liste des actes CCAM"}
+      ]
+    },
+    "RSS": {
+      "description": "Résumé de Sortie Standardisé",
+      "line_length": 400,
+      "fields": [
+        {"name": "FINESS_PMSI", "start": 1, "end": 9, "type": "string", "description": "FINESS PMSI"},
+        {"name": "NO_RSS", "start": 10, "end": 29, "type": "string", "description": "Numéro RSS"},
+        {"name": "NO_PATIENT", "start": 30, "end": 49, "type": "string", "description": "Numéro patient"},
+        {"name": "NB_RUM", "start": 50, "end": 52, "type": "integer", "description": "Nombre de RUM dans le RSS"},
+        {"name": "DATE_ENTREE_SEJOUR", "start": 53, "end": 60, "type": "date", "format": "%Y%m%d", "description": "Date entrée séjour"},
+        {"name": "DATE_SORTIE_SEJOUR", "start": 61, "end": 68, "type": "date", "format": "%Y%m%d", "description": "Date sortie séjour"},
+        {"name": "GHM", "start": 69, "end": 74, "type": "string", "description": "GHM classant"},
+        {"name": "CMD", "start": 75, "end": 76, "type": "string", "description": "Catégorie Majeure Diagnostic"},
+        {"name": "SEVERITE", "start": 77, "end": 77, "type": "string", "description": "Niveau de sévérité"},
+        {"name": "DUREE_SEJOUR", "start": 78, "end": 81, "type": "integer", "description": "Durée de séjour en jours"},
+        {"name": "TARIF_GHS", "start": 82, "end": 91, "type": "decimal", "description": "Tarif GHS en euros"},
+        {"name": "SUPPLEMENT_REA", "start": 92, "end": 95, "type": "integer", "description": "Nb jours réanimation"},
+        {"name": "SUPPLEMENT_SI", "start": 96, "end": 99, "type": "integer", "description": "Nb jours soins intensifs"},
+        {"name": "SUPPLEMENT_SC", "start": 100, "end": 103, "type": "integer", "description": "Nb jours surveillance continue"},
+        {"name": "FILLER", "start": 104, "end": 400, "type": "string", "description": "Zone réservée"}
+      ]
+    }
+  },
+  "key_fields": ["NO_RSS", "NO_RUM", "NO_PATIENT"],
+  "date_fields": ["DATE_NAISSANCE", "DATE_ENTREE_UM", "DATE_SORTIE_UM", "DATE_ENTREE_SEJOUR", "DATE_SORTIE_SEJOUR"],
+  "required_fields": ["FINESS_PMSI", "NO_RSS", "NO_PATIENT"]
+}

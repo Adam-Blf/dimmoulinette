@@ -1,0 +1,67 @@
+{
+  "version": "2024",
+  "type": "FICHCOMP",
+  "description": "Fichiers Complémentaires - Isolement, Contention, Transport",
+  "encoding": "utf-8",
+  "subtypes": {
+    "ISOLEMENT": {
+      "code": "ISO",
+      "description": "Mesures d'isolement psychiatrique",
+      "line_length": 200,
+      "fields": [
+        {"name": "FINESS_PMSI", "start": 1, "end": 9, "type": "string", "description": "FINESS PMSI"},
+        {"name": "NO_SEJOUR", "start": 10, "end": 29, "type": "string", "description": "Numéro de séjour"},
+        {"name": "NO_PATIENT", "start": 30, "end": 49, "type": "string", "description": "Numéro patient"},
+        {"name": "DATE_DEBUT_ISOLEMENT", "start": 50, "end": 57, "type": "date", "format": "%Y%m%d", "description": "Date début isolement"},
+        {"name": "HEURE_DEBUT", "start": 58, "end": 61, "type": "string", "description": "Heure début (HHMM)"},
+        {"name": "DATE_FIN_ISOLEMENT", "start": 62, "end": 69, "type": "date", "format": "%Y%m%d", "description": "Date fin isolement"},
+        {"name": "HEURE_FIN", "start": 70, "end": 73, "type": "string", "description": "Heure fin (HHMM)"},
+        {"name": "TYPE_ISOLEMENT", "start": 74, "end": 75, "type": "string", "description": "Type d'isolement"},
+        {"name": "CODE_UM", "start": 76, "end": 79, "type": "string", "description": "Code UM"},
+        {"name": "MOTIF_ISOLEMENT", "start": 80, "end": 81, "type": "string", "description": "Motif d'isolement"},
+        {"name": "MODE_LEGAL", "start": 82, "end": 83, "type": "string", "description": "Mode légal de soins"},
+        {"name": "DUREE_MINUTES", "start": 84, "end": 89, "type": "integer", "description": "Durée en minutes"},
+        {"name": "FILLER", "start": 90, "end": 200, "type": "string", "description": "Zone réservée"}
+      ]
+    },
+    "CONTENTION": {
+      "code": "CONT",
+      "description": "Mesures de contention",
+      "line_length": 200,
+      "fields": [
+        {"name": "FINESS_PMSI", "start": 1, "end": 9, "type": "string", "description": "FINESS PMSI"},
+        {"name": "NO_SEJOUR", "start": 10, "end": 29, "type": "string", "description": "Numéro de séjour"},
+        {"name": "NO_PATIENT", "start": 30, "end": 49, "type": "string", "description": "Numéro patient"},
+        {"name": "DATE_DEBUT", "start": 50, "end": 57, "type": "date", "format": "%Y%m%d", "description": "Date début contention"},
+        {"name": "HEURE_DEBUT", "start": 58, "end": 61, "type": "string", "description": "Heure début"},
+        {"name": "DATE_FIN", "start": 62, "end": 69, "type": "date", "format": "%Y%m%d", "description": "Date fin contention"},
+        {"name": "HEURE_FIN", "start": 70, "end": 73, "type": "string", "description": "Heure fin"},
+        {"name": "TYPE_CONTENTION", "start": 74, "end": 75, "type": "string", "description": "Type de contention"},
+        {"name": "CODE_UM", "start": 76, "end": 79, "type": "string", "description": "Code UM"},
+        {"name": "FILLER", "start": 80, "end": 200, "type": "string", "description": "Zone réservée"}
+      ]
+    },
+    "TRANSPORT": {
+      "code": "TRANS",
+      "description": "Transports sanitaires",
+      "line_length": 250,
+      "fields": [
+        {"name": "FINESS_PMSI", "start": 1, "end": 9, "type": "string", "description": "FINESS PMSI"},
+        {"name": "NO_SEJOUR", "start": 10, "end": 29, "type": "string", "description": "Numéro de séjour"},
+        {"name": "NO_PATIENT", "start": 30, "end": 49, "type": "string", "description": "Numéro patient"},
+        {"name": "DATE_TRANSPORT", "start": 50, "end": 57, "type": "date", "format": "%Y%m%d", "description": "Date du transport"},
+        {"name": "TYPE_TRANSPORT", "start": 58, "end": 59, "type": "string", "description": "Type transport (AMB/VSL/SMUR)"},
+        {"name": "MODE_TRANSPORT", "start": 60, "end": 61, "type": "string", "description": "Mode de transport"},
+        {"name": "DISTANCE_KM", "start": 62, "end": 67, "type": "integer", "description": "Distance en km"},
+        {"name": "MOTIF", "start": 68, "end": 69, "type": "string", "description": "Motif du transport"},
+        {"name": "ORIGINE", "start": 70, "end": 78, "type": "string", "description": "FINESS origine"},
+        {"name": "DESTINATION", "start": 79, "end": 87, "type": "string", "description": "FINESS destination"},
+        {"name": "TARIF", "start": 88, "end": 97, "type": "decimal", "description": "Tarif en euros"},
+        {"name": "FILLER", "start": 98, "end": 250, "type": "string", "description": "Zone réservée"}
+      ]
+    }
+  },
+  "key_fields": ["NO_SEJOUR", "NO_PATIENT"],
+  "date_fields": ["DATE_DEBUT_ISOLEMENT", "DATE_FIN_ISOLEMENT", "DATE_DEBUT", "DATE_FIN", "DATE_TRANSPORT"],
+  "required_fields": ["FINESS_PMSI", "NO_SEJOUR"]
+}
