@@ -101,22 +101,22 @@ class UniversalParser:
         """
         filename = filepath.name.upper()
 
-        # Détection par pattern dans le nom
+        # Détection par pattern dans le nom (flexible)
         patterns = {
-            FileType.RPS: ["RPS_", "RPS.", "RIMP"],
-            FileType.RAA: ["RAA_", "RAA.", "RPSA", "R3A"],
-            FileType.VID_HOSP: ["VIDHOSP", "VID_HOSP", "VID-HOSP", "ANOHOSP"],
-            FileType.RSF_ACE: ["RSF", "RSFACE"],
-            FileType.FICHCOMP: ["FICHCOMP", "ISO_", "TRANSPORT"],
+            FileType.RPS: ["RPS", "RIMP"],
+            FileType.RAA: ["RAA", "RPSA", "R3A"],
+            FileType.VID_HOSP: ["VIDHOSP", "VID_HOSP", "VID-HOSP", "ANOHOSP", "ANO"],
+            FileType.RSF_ACE: ["RSF", "RSFACE", "ACE"],
+            FileType.FICHCOMP: ["FICHCOMP", "ISO", "TRANSPORT", "CONTENTION"],
             FileType.RUM_RSS: ["RUM", "RSS"],
-            FileType.VID_IPP: ["VIDIPP", "VID_IPP", "VID-IPP", "IPP_", "UM_"],
+            FileType.VID_IPP: ["VIDIPP", "VID_IPP", "VID-IPP", "IPP", "UM"],
         }
 
         for file_type, keywords in patterns.items():
             if any(kw in filename for kw in keywords):
                 return file_type
 
-        # Détection par analyse du contenu (première ligne - format PSY)
+        # Détection par analyse du contenu (longueur de ligne - format PSY/MCO)
         try:
             with open(filepath, 'r', encoding=self.config.encoding, errors='replace') as f:
                 first_line = f.readline().strip()
@@ -140,9 +140,14 @@ class UniversalParser:
 
             for length, ftype in line_lengths.items():
                 diff = abs(len(first_line) - length)
-                if diff < min_diff and diff < 50:  # Tolérance de 50 caractères
+                if diff < min_diff and diff < 100:  # Tolérance large de 100 caractères
                     min_diff = diff
                     closest_type = ftype
+
+            # Si toujours UNKNOWN mais fichier .txt, tenter détection par extension
+            if closest_type == FileType.UNKNOWN and filepath.suffix.lower() == '.txt':
+                # Fichier texte non reconnu - accepter comme FICHCOMP générique
+                return FileType.FICHCOMP
 
             return closest_type
 
