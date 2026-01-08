@@ -103,30 +103,34 @@ class UniversalParser:
 
         # Détection par pattern dans le nom
         patterns = {
-            FileType.RPS: ["RPS", "RIMP", "R3A"],
-            FileType.RAA: ["RAA", "RPSA"],
-            FileType.VID_HOSP: ["VIDHOSP", "VID_HOSP", "VID-HOSP"],
-            FileType.RSF_ACE: ["RSF", "ACE", "RSFACE"],
-            FileType.FICHCOMP: ["FICHCOMP", "ISO", "TRANSPORT"],
+            FileType.RPS: ["RPS_", "RPS.", "RIMP"],
+            FileType.RAA: ["RAA_", "RAA.", "RPSA", "R3A"],
+            FileType.VID_HOSP: ["VIDHOSP", "VID_HOSP", "VID-HOSP", "ANOHOSP"],
+            FileType.RSF_ACE: ["RSF", "RSFACE"],
+            FileType.FICHCOMP: ["FICHCOMP", "ISO_", "TRANSPORT"],
             FileType.RUM_RSS: ["RUM", "RSS"],
-            FileType.VID_IPP: ["VIDIPP", "VID_IPP", "VID-IPP"],
+            FileType.VID_IPP: ["VIDIPP", "VID_IPP", "VID-IPP", "IPP_", "UM_"],
         }
 
         for file_type, keywords in patterns.items():
             if any(kw in filename for kw in keywords):
                 return file_type
 
-        # Détection par analyse du contenu (première ligne)
+        # Détection par analyse du contenu (première ligne - format PSY)
         try:
             with open(filepath, 'r', encoding=self.config.encoding, errors='replace') as f:
                 first_line = f.readline().strip()
 
-            # Analyse de la longueur de ligne
+            # Analyse de la longueur de ligne (format PSY 2024/2025)
             line_lengths = {
-                520: FileType.RPS,
-                400: FileType.RAA,
-                150: FileType.VID_HOSP,
+                154: FileType.RPS,    # PSY
+                96: FileType.RAA,     # PSY (R3A)
+                520: FileType.RPS,    # MCO fallback
+                400: FileType.RAA,    # MCO fallback
+                514: FileType.VID_HOSP,  # PSY
+                150: FileType.VID_HOSP,  # MCO
                 300: FileType.RSF_ACE,
+                113: FileType.FICHCOMP,  # ISO PSY
                 200: FileType.FICHCOMP,
                 550: FileType.RUM_RSS,
             }
