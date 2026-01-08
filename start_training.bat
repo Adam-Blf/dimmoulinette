@@ -10,28 +10,81 @@ echo ╚════════════════════════
 echo.
 
 REM ============================================================
-REM ETAPE 1: VERIFICATION PYTHON
+REM ETAPE 0: VERIFICATION WINGET ET PREREQUIS
 REM ============================================================
-echo [1/6] Verification de Python...
+echo [0/7] Verification des prerequis systeme...
+
+REM Verifier si winget est disponible
+winget --version >nul 2>&1
+if errorlevel 1 (
+    echo        [!] Winget non disponible - installation manuelle requise
+    echo            Installez App Installer depuis le Microsoft Store
+    set WINGET_OK=0
+) else (
+    echo        Winget disponible
+    set WINGET_OK=1
+)
+
+REM ============================================================
+REM ETAPE 1: VERIFICATION ET INSTALLATION PYTHON
+REM ============================================================
+echo.
+echo [1/7] Verification de Python...
 python --version >nul 2>&1
 if errorlevel 1 (
-    echo.
-    echo [ERREUR] Python n'est pas installe!
-    echo.
-    echo Telechargez Python 3.10+ depuis: https://www.python.org/downloads/
-    echo Cochez "Add Python to PATH" lors de l'installation
-    echo.
-    pause
-    exit /b 1
+    echo        Python non trouve!
+    if "!WINGET_OK!"=="1" (
+        echo        Installation de Python via winget...
+        winget install Python.Python.3.11 --silent --accept-package-agreements --accept-source-agreements
+        if errorlevel 1 (
+            echo        [ERREUR] Echec installation Python
+            echo        Installez manuellement: https://www.python.org/downloads/
+            pause
+            exit /b 1
+        )
+        echo        Python installe! Redemarrez ce script.
+        echo        ^(Le PATH sera mis a jour apres redemarrage du terminal^)
+        pause
+        exit /b 0
+    ) else (
+        echo        [ERREUR] Python non installe et winget non disponible
+        echo        Installez Python 3.10+ depuis: https://www.python.org/downloads/
+        pause
+        exit /b 1
+    )
 )
 for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYVER=%%i
 echo        Python %PYVER% detecte
 
 REM ============================================================
-REM ETAPE 2: INSTALLATION DES DEPENDANCES DE BASE
+REM ETAPE 2: VERIFICATION ET INSTALLATION GIT
 REM ============================================================
 echo.
-echo [2/6] Installation des dependances de base...
+echo [2/7] Verification de Git...
+git --version >nul 2>&1
+if errorlevel 1 (
+    echo        Git non trouve!
+    if "!WINGET_OK!"=="1" (
+        echo        Installation de Git via winget...
+        winget install Git.Git --silent --accept-package-agreements --accept-source-agreements
+        if errorlevel 1 (
+            echo        [!] Echec installation Git ^(non bloquant^)
+        ) else (
+            echo        Git installe!
+        )
+    ) else (
+        echo        [!] Git non installe ^(non bloquant pour l'entrainement^)
+    )
+) else (
+    for /f "tokens=3" %%i in ('git --version 2^>^&1') do set GITVER=%%i
+    echo        Git !GITVER! detecte
+)
+
+REM ============================================================
+REM ETAPE 3: INSTALLATION DES DEPENDANCES DE BASE
+REM ============================================================
+echo.
+echo [3/7] Installation des dependances de base...
 
 REM Verifier pip
 python -m pip --version >nul 2>&1
@@ -46,10 +99,10 @@ python -m pip install --quiet --upgrade pip
 python -m pip install --quiet polars psutil
 
 REM ============================================================
-REM ETAPE 3: DETECTION DU MATERIEL
+REM ETAPE 4: DETECTION DU MATERIEL
 REM ============================================================
 echo.
-echo [3/6] Detection automatique du materiel...
+echo [4/7] Detection automatique du materiel...
 echo.
 
 REM Creer un script Python temporaire pour la detection
@@ -129,10 +182,10 @@ if exist _vram_gb.tmp (
 )
 
 REM ============================================================
-REM ETAPE 4: INSTALLATION PYTORCH (CPU ou CUDA)
+REM ETAPE 5: INSTALLATION PYTORCH (CPU ou CUDA)
 REM ============================================================
 echo.
-echo [4/6] Installation de PyTorch...
+echo [5/7] Installation de PyTorch...
 
 if "%GPU_DETECTED%"=="1" (
     echo        GPU detecte - Installation PyTorch CUDA...
@@ -151,10 +204,10 @@ python -c "import torch; print(f'        PyTorch {torch.__version__} installe')"
 python -c "import torch; cuda=torch.cuda.is_available(); print(f'        CUDA disponible: {cuda}')"
 
 REM ============================================================
-REM ETAPE 5: INSTALLATION DES DEPENDANCES ML
+REM ETAPE 6: INSTALLATION DES DEPENDANCES ML
 REM ============================================================
 echo.
-echo [5/6] Installation des bibliotheques ML...
+echo [6/7] Installation des bibliotheques ML...
 
 python -m pip install --quiet transformers>=4.36.0 datasets>=2.16.0 accelerate>=0.25.0
 python -m pip install --quiet peft>=0.7.0 trl>=0.7.0
@@ -171,10 +224,10 @@ python -c "import peft; print(f'        PEFT {peft.__version__}')"
 python -c "import trl; print(f'        TRL {trl.__version__}')"
 
 REM ============================================================
-REM ETAPE 6: DETECTION ET CONFIGURATION OPTIMALE
+REM ETAPE 7: DETECTION ET CONFIGURATION OPTIMALE
 REM ============================================================
 echo.
-echo [6/6] Configuration optimale...
+echo [7/7] Configuration optimale...
 
 REM Executer la detection complete
 if exist hardware_detector.py (
