@@ -163,6 +163,15 @@ Apres le traitement, vous trouverez dans `./output/` :
 ### "Erreur GPU / CUDA"
 - Le fine-tuning fonctionne aussi sur CPU (plus lent)
 - Verifiez que vos drivers NVIDIA sont a jour
+- Reinstallez PyTorch avec support CUDA :
+
+```bash
+# Pour CUDA 11.8
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# Pour CUDA 12.1
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
 
 ### "Memoire insuffisante"
 - Fermez les autres applications

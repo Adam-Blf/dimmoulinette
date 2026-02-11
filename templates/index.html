@@ -3,1248 +3,1028 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIM - Data Intelligence Medicale</title>
+    <title>DIM — Data Intelligence Medicale</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1e3a5f;
-            --primary-light: #2d5a8a;
-            --primary-dark: #0f2840;
-            --accent: #4a90d9;
-            --success: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
-            --background: #f5f7fa;
-            --surface: #ffffff;
-            --text: #2c3e50;
-            --text-light: #6c757d;
-            --border: #dee2e6;
-            --ai-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-deep: #0a0e1a;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2236;
+            --bg-surface: #1e293b;
+            --bg-input: #0f172a;
+            --border: rgba(148, 163, 184, 0.12);
+            --border-hover: rgba(148, 163, 184, 0.25);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-blue-glow: rgba(59, 130, 246, 0.15);
+            --accent-violet: #8b5cf6;
+            --accent-violet-glow: rgba(139, 92, 246, 0.15);
+            --accent-emerald: #10b981;
+            --accent-emerald-glow: rgba(16, 185, 129, 0.15);
+            --accent-amber: #f59e0b;
+            --accent-amber-glow: rgba(245, 158, 11, 0.12);
+            --accent-rose: #f43f5e;
+            --accent-rose-glow: rgba(244, 63, 94, 0.12);
+            --accent-cyan: #06b6d4;
+            --gradient-ai: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            --gradient-ipp: linear-gradient(135deg, #f59e0b, #ef4444);
+            --gradient-header: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-pill: 100px;
+            --shadow-card: 0 4px 24px rgba(0,0,0,0.25);
+            --shadow-glow-violet: 0 0 20px rgba(139, 92, 246, 0.2);
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            font-family: 'Segoe UI', -apple-system, sans-serif;
-            background: var(--background);
-            color: var(--text);
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
             line-height: 1.6;
+            min-height: 100vh;
         }
 
+        /* ===== HEADER ===== */
         header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 1rem 2rem;
+            background: var(--gradient-header);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(16px);
         }
-
-        .header-content {
-            max-width: 1600px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .header-inner {
+            max-width: 1680px; width: 100%; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
         }
-
-        .logo { display: flex; align-items: center; gap: 1rem; }
-        .logo h1 { font-size: 1.5rem; }
-        .logo span { font-size: 0.85rem; opacity: 0.8; }
-
-        .header-badges { display: flex; gap: 0.5rem; }
-
-        .status-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .status-badge.ai { background: var(--ai-gradient); }
-        .status-badge .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #28a745;
-        }
-        .status-badge .dot.offline { background: #dc3545; }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 1.5rem;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
-
-        .card {
-            background: var(--surface);
+        .logo { display: flex; align-items: center; gap: 0.75rem; }
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: var(--gradient-ai);
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            overflow: hidden;
+            display: grid; place-items: center;
+            font-weight: 700; font-size: 0.95rem; letter-spacing: -0.5px;
         }
-
-        .card.wide { grid-column: span 2; }
-        .card.full { grid-column: span 3; }
-        .card.ai-card { border: 2px solid #667eea; }
-
-        .card-header {
-            background: var(--primary);
-            color: white;
-            padding: 0.8rem 1.2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .logo-text h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.3px; line-height: 1.2; }
+        .logo-text span { font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.3px; }
+        .header-pills { display: flex; gap: 0.5rem; align-items: center; }
+        .pill {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.35rem 0.85rem; border-radius: var(--radius-pill);
+            font-size: 0.75rem; font-weight: 500;
+            border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+            color: var(--text-secondary); transition: var(--transition);
         }
-
-        .card-header.ai { background: var(--ai-gradient); }
-
-        .card-header h2 {
-            font-size: 1rem;
-            font-weight: 600;
+        .pill .dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--accent-rose); transition: var(--transition);
         }
+        .pill .dot.online { background: var(--accent-emerald); box-shadow: 0 0 8px rgba(16,185,129,0.5); }
+        .pill.ai-pill { background: var(--accent-violet-glow); border-color: rgba(139,92,246,0.3); color: #c4b5fd; }
 
-        .card-body { padding: 1.2rem; }
+        /* ===== LAYOUT ===== */
+        .dashboard {
+            max-width: 1680px; margin: 0 auto;
+            padding: 1.25rem 1.5rem 3rem;
+            display: grid; grid-template-columns: repeat(12, 1fr); gap: 1rem;
+        }
+        .col-4 { grid-column: span 4; }
+        .col-6 { grid-column: span 6; }
+        .col-8 { grid-column: span 8; }
+        .col-12 { grid-column: span 12; }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden; transition: var(--transition);
+        }
+        .card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-card); }
+        .card-head {
+            padding: 0.85rem 1.15rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-head h2 {
+            font-size: 0.85rem; font-weight: 600; letter-spacing: -0.2px;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .card-head .tag {
+            font-size: 0.6rem; font-weight: 600; padding: 0.15rem 0.5rem;
+            border-radius: var(--radius-pill); text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .tag-ai { background: var(--accent-violet-glow); color: #a78bfa; }
+        .tag-ipp { background: var(--accent-amber-glow); color: var(--accent-amber); }
+        .tag-live { background: var(--accent-emerald-glow); color: var(--accent-emerald); }
+        .card-body { padding: 1.15rem; }
+        .card.glow-ai { border-color: rgba(139,92,246,0.2); box-shadow: inset 0 1px 0 rgba(139,92,246,0.1); }
+        .card.glow-ai:hover { box-shadow: var(--shadow-glow-violet); }
+        .card.glow-ipp { border-color: rgba(245,158,11,0.2); box-shadow: inset 0 1px 0 rgba(245,158,11,0.08); }
 
         /* ===== DROP ZONE ===== */
-        .drop-zone {
-            border: 3px dashed var(--border);
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            margin-bottom: 1rem;
+        .dropzone {
+            border: 2px dashed rgba(139,92,246,0.25); border-radius: var(--radius);
+            padding: 2rem 1.5rem; text-align: center; cursor: pointer;
+            transition: var(--transition);
+            background: radial-gradient(ellipse at center, rgba(139,92,246,0.04) 0%, transparent 70%);
         }
+        .dropzone:hover { border-color: rgba(139,92,246,0.5); background: radial-gradient(ellipse at center, rgba(139,92,246,0.08) 0%, transparent 70%); }
+        .dropzone.dragover { border-color: var(--accent-emerald); background: radial-gradient(ellipse at center, rgba(16,185,129,0.08) 0%, transparent 70%); transform: scale(1.01); }
+        .dropzone.processing { border-color: var(--accent-amber); animation: pulse-border 1.5s ease infinite; }
+        @keyframes pulse-border { 0%,100% { border-color: rgba(245,158,11,0.3); } 50% { border-color: rgba(245,158,11,0.6); } }
+        .dropzone-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .dropzone h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .dropzone p { font-size: 0.8rem; color: var(--text-muted); }
+        .dropzone input[type="file"] { display: none; }
 
-        .drop-zone:hover {
-            border-color: var(--accent);
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        /* ===== METRICS ===== */
+        .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .metrics.cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .metrics.cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .metric {
+            background: var(--bg-surface); border-radius: var(--radius-sm);
+            padding: 0.7rem 0.8rem; text-align: center;
+            border: 1px solid transparent; transition: var(--transition);
         }
-
-        .drop-zone.dragover {
-            border-color: var(--success);
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            transform: scale(1.02);
-        }
-
-        .drop-zone.processing {
-            border-color: var(--warning);
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
-        }
-
-        .drop-zone-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .drop-zone h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary);
-        }
-
-        .drop-zone p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        .drop-zone input[type="file"] {
-            display: none;
-        }
-
-        /* ===== STATS ===== */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-        }
-
-        .stat-box {
-            background: var(--background);
-            padding: 0.8rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .stat-box .value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .stat-box .label {
-            font-size: 0.7rem;
-            color: var(--text-light);
-            text-transform: uppercase;
-        }
-
-        .stat-box.rps .value { color: var(--danger); }
-        .stat-box.raa .value { color: var(--warning); }
-        .stat-box.success .value { color: var(--success); }
-        .stat-box.ai .value { color: #667eea; }
+        .metric:hover { border-color: var(--border-hover); }
+        .metric .val { font-size: 1.4rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; line-height: 1.2; }
+        .metric .lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.15rem; }
+        .metric.blue .val { color: var(--accent-blue); }
+        .metric.violet .val { color: var(--accent-violet); }
+        .metric.emerald .val { color: var(--accent-emerald); }
+        .metric.amber .val { color: var(--accent-amber); }
+        .metric.rose .val { color: var(--accent-rose); }
+        .metric.cyan .val { color: var(--accent-cyan); }
 
         /* ===== FILE LIST ===== */
-        .file-list {
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-        }
-
+        .file-list { max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 0.75rem; }
+        .file-list::-webkit-scrollbar { width: 4px; }
+        .file-list::-webkit-scrollbar-track { background: transparent; }
+        .file-list::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; }
         .file-item {
-            display: flex;
-            align-items: center;
-            padding: 0.6rem 0.8rem;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.85rem;
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--border);
+            font-size: 0.82rem; transition: var(--transition);
         }
-
         .file-item:last-child { border-bottom: none; }
-        .file-item:hover { background: var(--background); }
-        .file-item input { margin-right: 0.8rem; }
-        .file-item .name { flex: 1; }
-
-        .file-type {
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            margin-left: 0.5rem;
-        }
-
-        .file-type.RPS { background: #fce4ec; color: var(--danger); }
-        .file-type.RAA { background: #fff3e0; color: #e65100; }
-        .file-type.VID_HOSP { background: #e3f2fd; color: var(--accent); }
-        .file-type.UNKNOWN { background: #f5f5f5; color: var(--text-light); }
-
-        .file-size { color: var(--text-light); font-size: 0.75rem; }
+        .file-item:hover { background: var(--bg-surface); }
+        .file-item input[type="checkbox"] { accent-color: var(--accent-blue); cursor: pointer; }
+        .file-item .name { flex: 1; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+        .file-type-tag { padding: 0.15rem 0.5rem; border-radius: var(--radius-pill); font-size: 0.6rem; font-weight: 600; letter-spacing: 0.3px; }
+        .file-type-tag.RPS { background: rgba(244,63,94,0.12); color: #fb7185; }
+        .file-type-tag.RAA { background: rgba(245,158,11,0.12); color: #fbbf24; }
+        .file-type-tag.VID_HOSP { background: rgba(59,130,246,0.12); color: #60a5fa; }
+        .file-type-tag.VID_IPP { background: rgba(16,185,129,0.12); color: #34d399; }
+        .file-type-tag.RSF_ACE { background: rgba(139,92,246,0.12); color: #a78bfa; }
+        .file-type-tag.RUM_RSS { background: rgba(6,182,212,0.12); color: #22d3ee; }
+        .file-type-tag.UNKNOWN { background: rgba(100,116,139,0.12); color: var(--text-muted); }
+        .file-size { font-size: 0.7rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
 
         /* ===== BUTTONS ===== */
         .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0.6rem 1.2rem;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+            padding: 0.55rem 1.1rem; border: 1px solid transparent; border-radius: var(--radius-sm);
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            font-size: 0.82rem; font-weight: 600; cursor: pointer;
+            transition: var(--transition); white-space: nowrap;
         }
-
-        .btn:hover { transform: translateY(-1px); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-warning { background: var(--warning); color: #333; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-secondary { background: var(--text-light); color: white; }
-        .btn-ai { background: var(--ai-gradient); color: white; }
-        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
-
-        .btn-group { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; filter: none; }
+        .btn-primary { background: var(--accent-blue); color: white; }
+        .btn-primary:hover { box-shadow: 0 4px 16px rgba(59,130,246,0.3); }
+        .btn-ai { background: var(--gradient-ai); color: white; }
+        .btn-ai:hover { box-shadow: 0 4px 16px rgba(139,92,246,0.3); }
+        .btn-emerald { background: var(--accent-emerald); color: white; }
+        .btn-emerald:hover { box-shadow: 0 4px 16px rgba(16,185,129,0.3); }
+        .btn-amber { background: var(--accent-amber); color: #1e1b1b; }
+        .btn-amber:hover { box-shadow: 0 4px 16px rgba(245,158,11,0.3); }
+        .btn-rose { background: var(--accent-rose); color: white; }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-ghost:hover { background: var(--bg-surface); border-color: var(--border-hover); }
+        .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.75rem; }
+        .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+        .spinner {
+            width: 14px; height: 14px;
+            border: 2px solid rgba(255,255,255,0.25); border-top-color: white;
+            border-radius: 50%; animation: spin 0.7s linear infinite; display: none;
+        }
+        .btn.loading .spinner { display: inline-block; }
+        .btn.loading .btn-text { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ===== FORMS ===== */
-        .input-group {
-            margin-bottom: 1rem;
+        .field { margin-bottom: 0.85rem; }
+        .field label { display: block; font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.3rem; letter-spacing: 0.2px; }
+        .field select, .field input {
+            width: 100%; padding: 0.55rem 0.75rem;
+            background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            color: var(--text-primary); font-family: 'Space Grotesk', system-ui, sans-serif;
+            font-size: 0.82rem; transition: var(--transition);
         }
-
-        .input-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-            color: var(--text);
-        }
-
-        .input-group select,
-        .input-group input {
-            width: 100%;
-            padding: 0.6rem;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.85rem;
-        }
+        .field select:focus, .field input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px var(--accent-blue-glow); }
+        .field select { cursor: pointer; }
+        .field select option { background: var(--bg-card); }
 
         /* ===== CONSOLE ===== */
         .console {
-            background: #1e1e1e;
-            border-radius: 6px;
-            padding: 1rem;
-            height: 200px;
-            overflow-y: auto;
-            font-family: 'Consolas', monospace;
-            font-size: 0.8rem;
+            background: #0c0f18; border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 0.85rem; height: 220px; overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; line-height: 1.65;
         }
-
-        .log-line { color: #d4d4d4; padding: 0.1rem 0; }
-        .log-line.success { color: #4ec9b0; }
-        .log-line.error { color: #f48771; }
-        .log-line.warning { color: #dcdcaa; }
-        .log-line.ai { color: #c586c0; }
-
-        /* ===== AI ANALYSIS ===== */
-        .ai-result {
-            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-            border: 1px solid #c4b5fd;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-
-        .ai-result h4 {
-            color: #7c3aed;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .ai-result .analysis {
-            font-size: 0.85rem;
-            color: var(--text);
-            white-space: pre-wrap;
-        }
-
-        .ai-result.anomaly {
-            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-            border-color: #fca5a5;
-        }
-
-        .ai-result.anomaly h4 { color: var(--danger); }
-
-        /* ===== TABLES ===== */
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-
-        .results-table th,
-        .results-table td {
-            padding: 0.6rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .results-table th {
-            background: var(--background);
-            font-weight: 600;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-        }
-
-        .results-table tr.anomaly { background: #ffeaea; }
-        .results-table tr.anomaly td { color: var(--danger); }
-        .results-table tr.ai-anomaly { background: #f5f3ff; }
+        .console::-webkit-scrollbar { width: 4px; }
+        .console::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; }
+        .log { color: #94a3b8; padding: 0.05rem 0; }
+        .log.success { color: #34d399; }
+        .log.error { color: #fb7185; }
+        .log.warning { color: #fbbf24; }
+        .log.ai { color: #a78bfa; }
 
         /* ===== TABS ===== */
-        .tabs {
-            display: flex;
-            gap: 0.3rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid var(--border);
+        .tab-bar { display: flex; gap: 0.15rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; overflow-x: auto; }
+        .tab-btn {
+            padding: 0.55rem 1rem; background: none; border: none;
+            border-bottom: 2px solid transparent;
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            font-size: 0.8rem; font-weight: 500; color: var(--text-muted);
+            cursor: pointer; white-space: nowrap; transition: var(--transition);
         }
+        .tab-btn:hover { color: var(--text-secondary); }
+        .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+        .tab-btn.ai-active { color: var(--accent-violet); border-bottom-color: var(--accent-violet); }
+        .tab-btn.ipp-alert { color: var(--accent-amber); border-bottom-color: var(--accent-amber); font-weight: 700; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
 
-        .tab {
-            padding: 0.5rem 1rem;
-            background: none;
-            border: none;
-            font-size: 0.85rem;
-            color: var(--text-light);
-            cursor: pointer;
-            border-radius: 6px 6px 0 0;
-        }
-
-        .tab:hover { background: var(--background); }
-        .tab.active { background: var(--primary); color: white; }
-        .tab.ai-tab.active { background: var(--ai-gradient); }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        /* ===== TABLES ===== */
+        .tbl { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .tbl th, .tbl td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .tbl th { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; background: var(--bg-surface); }
+        .tbl tr:hover td { background: rgba(255,255,255,0.02); }
+        .tbl tr.row-danger td { color: var(--accent-rose); background: var(--accent-rose-glow); }
+        .tbl tr.row-ai td { background: var(--accent-violet-glow); }
 
         /* ===== ALERTS ===== */
-        .alert {
-            padding: 0.8rem 1rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            font-size: 0.85rem;
+        .notice { padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-size: 0.82rem; border: 1px solid transparent; margin-bottom: 0.75rem; }
+        .notice-info { background: var(--accent-blue-glow); border-color: rgba(59,130,246,0.2); color: #93c5fd; }
+        .notice-success { background: var(--accent-emerald-glow); border-color: rgba(16,185,129,0.2); color: #6ee7b7; }
+        .notice-warning { background: var(--accent-amber-glow); border-color: rgba(245,158,11,0.2); color: #fcd34d; }
+        .notice-danger { background: var(--accent-rose-glow); border-color: rgba(244,63,94,0.2); color: #fda4af; }
+        .notice-ai { background: var(--accent-violet-glow); border-color: rgba(139,92,246,0.2); color: #c4b5fd; }
+        .notice strong { display: block; margin-bottom: 0.2rem; }
+
+        /* ===== AI BLOCKS ===== */
+        .ai-block { background: var(--accent-violet-glow); border: 1px solid rgba(139,92,246,0.2); border-radius: var(--radius-sm); padding: 1rem; margin-top: 0.75rem; }
+        .ai-block h4 { color: #a78bfa; font-size: 0.85rem; margin-bottom: 0.4rem; }
+        .ai-block .analysis-text { font-size: 0.82rem; color: var(--text-secondary); white-space: pre-wrap; }
+
+        /* ===== BADGES ===== */
+        .badge { display: inline-flex; align-items: center; padding: 0.15rem 0.5rem; border-radius: var(--radius-pill); font-size: 0.68rem; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+        .badge-danger { background: var(--accent-rose-glow); color: #fb7185; }
+        .badge-amber { background: var(--accent-amber-glow); color: var(--accent-amber); }
+        .detail-btn {
+            background: transparent; border: 1px solid rgba(139,92,246,0.3); color: #a78bfa;
+            padding: 0.2rem 0.6rem; border-radius: var(--radius-sm);
+            font-size: 0.7rem; font-family: 'Space Grotesk', system-ui, sans-serif;
+            font-weight: 500; cursor: pointer; transition: var(--transition);
         }
+        .detail-btn:hover { background: var(--accent-violet-glow); border-color: rgba(139,92,246,0.5); }
 
-        .alert-info { background: #d1ecf1; color: #0c5460; }
-        .alert-success { background: #d4edda; color: #155724; }
-        .alert-warning { background: #fff3cd; color: #856404; }
-        .alert-ai { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); color: #5b21b6; }
-
-        /* ===== SPINNER ===== */
-        .spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: none;
+        /* ===== MODAL ===== */
+        .modal-bg {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+            z-index: 1000; justify-content: center; align-items: center;
         }
-
-        .btn.loading .spinner { display: inline-block; }
-        .btn.loading .btn-text { display: none; }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .modal-bg.open { display: flex; }
+        .modal-box {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+            width: 90%; max-width: 880px; max-height: 80vh; overflow-y: auto;
+            padding: 1.5rem; box-shadow: 0 24px 80px rgba(0,0,0,0.5); animation: slideUp 0.25s ease;
+        }
+        .modal-box::-webkit-scrollbar { width: 4px; }
+        .modal-box::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .modal-header h3 { font-size: 1rem; font-weight: 600; }
+        .modal-close {
+            background: none; border: none; color: var(--text-muted);
+            font-size: 1.3rem; cursor: pointer; padding: 0.25rem; border-radius: 6px; transition: var(--transition);
+        }
+        .modal-close:hover { color: var(--text-primary); background: var(--bg-surface); }
 
         /* ===== PROGRESS ===== */
-        .progress {
-            height: 8px;
-            background: var(--border);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 0.5rem;
-        }
+        .progress-track { height: 4px; background: var(--bg-surface); border-radius: 4px; overflow: hidden; margin-top: 0.5rem; }
+        .progress-fill { height: 100%; background: var(--gradient-ai); border-radius: 4px; transition: width 0.4s ease; }
 
-        .progress-bar {
-            height: 100%;
-            background: var(--ai-gradient);
-            transition: width 0.3s ease;
+        /* ===== HELP ===== */
+        .help-box {
+            background: var(--bg-surface); border-radius: var(--radius-sm); padding: 0.85rem;
+            font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.75rem; border: 1px solid var(--border);
         }
+        .help-box strong { color: var(--text-primary); display: block; margin-bottom: 0.3rem; }
+        .help-box a { color: var(--accent-blue); text-decoration: none; }
+        .help-box a:hover { text-decoration: underline; }
 
-        footer {
-            text-align: center;
-            padding: 1.5rem;
-            color: var(--text-light);
-            font-size: 0.8rem;
-        }
+        /* ===== FOOTER ===== */
+        footer { text-align: center; padding: 2rem 1rem; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.3px; }
+        footer span { color: var(--accent-violet); }
+        .empty-state { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem; }
 
-        @media (max-width: 1200px) {
-            .container { grid-template-columns: repeat(2, 1fr); }
-            .card.wide, .card.full { grid-column: span 2; }
-        }
-
-        @media (max-width: 768px) {
-            .container { grid-template-columns: 1fr; }
-            .card.wide, .card.full { grid-column: span 1; }
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1280px) { .col-4 { grid-column: span 6; } .col-8 { grid-column: span 12; } }
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .col-4, .col-6, .col-8, .col-12 { grid-column: span 1; }
+            .metrics { grid-template-columns: repeat(2, 1fr); }
+            header { padding: 0 1rem; }
+            .dashboard { padding: 1rem; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <div>
-                    <h1>DIM - Data Intelligence Medicale</h1>
-                    <span>Moulinettes PMSI + IA locale - 100% securise</span>
-                </div>
-            </div>
-            <div class="header-badges">
-                <div class="status-badge ai" id="aiStatus">
-                    <span class="dot offline" id="aiDot"></span>
-                    <span id="aiStatusText">IA: Chargement...</span>
-                </div>
-                <div class="status-badge" id="systemStatus">En ligne</div>
+
+<header>
+    <div class="header-inner">
+        <div class="logo">
+            <div class="logo-icon">DIM</div>
+            <div class="logo-text">
+                <h1>Data Intelligence Medicale</h1>
+                <span>PMSI &middot; IA locale &middot; 100% securise</span>
             </div>
         </div>
-    </header>
-
-    <main class="container">
-        <!-- Zone de Drop Principal -->
-        <div class="card wide ai-card">
-            <div class="card-header ai">
-                <h2>Deposer un fichier PMSI pour analyse IA</h2>
+        <div class="header-pills">
+            <div class="pill ai-pill" id="aiStatus">
+                <span class="dot" id="aiDot"></span>
+                <span id="aiStatusText">IA: Chargement...</span>
             </div>
-            <div class="card-body">
-                <div class="drop-zone" id="dropZone">
-                    <div class="drop-zone-icon">+</div>
-                    <h3>Glissez-deposez votre fichier PMSI ici</h3>
-                    <p>ou cliquez pour selectionner (.txt, .csv)</p>
-                    <p style="margin-top: 0.5rem; font-size: 0.8rem; color: #667eea;">
-                        L'IA analysera automatiquement les anomalies
-                    </p>
-                    <input type="file" id="fileInput" accept=".txt,.csv,.tsv">
-                </div>
+            <div class="pill" id="systemStatus">
+                <span class="dot online"></span>
+                En ligne
+            </div>
+        </div>
+    </div>
+</header>
 
-                <div id="uploadProgress" style="display: none;">
-                    <div class="alert alert-ai">
-                        <strong id="progressStatus">Traitement en cours...</strong>
-                        <div class="progress">
-                            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
+<main class="dashboard">
 
-                <div id="aiAnalysisResult" style="display: none;">
-                    <!-- Resultats IA ici -->
+    <!-- ========== DROP ZONE ========== -->
+    <section class="card glow-ai col-8">
+        <div class="card-head">
+            <h2>Deposer un fichier PMSI <span class="tag tag-ai">IA</span></h2>
+        </div>
+        <div class="card-body">
+            <div class="dropzone" id="dropZone">
+                <div class="dropzone-icon">+</div>
+                <h3>Glissez un fichier PMSI ici</h3>
+                <p>ou cliquez pour selectionner &mdash; .txt, .csv</p>
+                <p style="margin-top:0.35rem;color:#a78bfa;font-size:0.75rem;">L'IA analysera automatiquement les anomalies</p>
+                <input type="file" id="fileInput" accept=".txt,.csv,.tsv">
+            </div>
+            <div id="uploadProgress" style="display:none;">
+                <div class="notice notice-ai" style="margin-top:0.75rem;">
+                    <strong id="progressStatus">Traitement en cours...</strong>
+                    <div class="progress-track"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Statut IA -->
-        <div class="card">
-            <div class="card-header ai"><h2>Moteur IA Local</h2></div>
-            <div class="card-body">
-                <div class="stats-row" style="grid-template-columns: repeat(2, 1fr);">
-                    <div class="stat-box ai"><div class="value" id="aiBackend">-</div><div class="label">Backend</div></div>
-                    <div class="stat-box ai"><div class="value" id="aiModel">-</div><div class="label">Modele</div></div>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-ai" onclick="initAI()" id="btnInitAI">
-                        <span class="spinner"></span>
-                        <span class="btn-text">Charger IA</span>
-                    </button>
-                    <button class="btn btn-success" onclick="createDimModel()" id="btnCreateModel">
-                        <span class="spinner"></span>
-                        <span class="btn-text">Creer modele DIM-PMSI</span>
-                    </button>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-warning" onclick="trainModel()" id="btnTrain">
-                        <span class="spinner"></span>
-                        <span class="btn-text">Fine-tuning GPU</span>
-                    </button>
-                    <button class="btn btn-secondary btn-sm" onclick="downloadModel()">Autre modele</button>
-                </div>
-                <div class="alert alert-ai" style="margin-top: 1rem;" id="aiHelp">
-                    <strong>Premiere utilisation?</strong><br>
-                    1. Installez <a href="https://ollama.ai/download" target="_blank">Ollama</a><br>
-                    2. Cliquez sur "Creer modele DIM-PMSI"<br>
-                    3. Puis "Charger IA" pour commencer l'analyse
-                </div>
-                <div id="availableModels" style="margin-top: 0.5rem; display: none;">
-                    <small style="color: var(--text-light);">Modeles disponibles: <span id="modelList">-</span></small>
+    <!-- ========== IA ENGINE ========== -->
+    <section class="card glow-ai col-4">
+        <div class="card-head">
+            <h2>Moteur IA Local <span class="tag tag-ai">IA</span></h2>
+        </div>
+        <div class="card-body">
+            <div class="metrics cols-2" style="margin-bottom:0.75rem;">
+                <div class="metric violet"><div class="val" id="aiBackend">&mdash;</div><div class="lbl">Backend</div></div>
+                <div class="metric violet"><div class="val" id="aiModel">&mdash;</div><div class="lbl">Modele</div></div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-ai" onclick="initAI()" id="btnInitAI">
+                    <span class="spinner"></span><span class="btn-text">Charger IA</span>
+                </button>
+                <button class="btn btn-emerald" onclick="createDimModel()" id="btnCreateModel">
+                    <span class="spinner"></span><span class="btn-text">Creer dim-pmsi</span>
+                </button>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-amber btn-sm" onclick="trainModel()" id="btnTrain">
+                    <span class="spinner"></span><span class="btn-text">Fine-tuning GPU</span>
+                </button>
+                <button class="btn btn-ghost btn-sm" onclick="downloadModel()">Autre modele</button>
+            </div>
+            <div class="help-box" id="aiHelp">
+                <strong>Premiere utilisation ?</strong>
+                1. Installez <a href="https://ollama.ai/download" target="_blank">Ollama</a><br>
+                2. Cliquez &laquo; Creer dim-pmsi &raquo;<br>
+                3. Puis &laquo; Charger IA &raquo;
+            </div>
+            <div id="availableModels" style="margin-top:0.5rem;display:none;">
+                <small style="color:var(--text-muted);font-size:0.72rem;">
+                    Modeles: <span id="modelList" style="font-family:'JetBrains Mono',monospace;">&mdash;</span>
+                </small>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FILES ========== -->
+    <section class="card col-4">
+        <div class="card-head">
+            <h2>Fichiers Source</h2>
+            <button class="btn btn-ghost btn-sm" onclick="loadFiles()">Actualiser</button>
+        </div>
+        <div class="card-body">
+            <div class="metrics" style="margin-bottom:0.75rem;">
+                <div class="metric rose"><div class="val" id="rpsCount">&mdash;</div><div class="lbl">RPS</div></div>
+                <div class="metric amber"><div class="val" id="raaCount">&mdash;</div><div class="lbl">RAA</div></div>
+                <div class="metric blue"><div class="val" id="otherCount">&mdash;</div><div class="lbl">Autres</div></div>
+                <div class="metric"><div class="val" id="totalCount">&mdash;</div><div class="lbl">Total</div></div>
+            </div>
+            <div class="file-list" id="fileList">
+                <div class="file-item"><span class="name" style="color:var(--text-muted)">Chargement...</span></div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="runETL()" id="btnETL">
+                    <span class="spinner"></span><span class="btn-text">Lancer Moulinettes</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== EPISODES PSY ========== -->
+    <section class="card col-4">
+        <div class="card-head"><h2>Episodes PSY</h2></div>
+        <div class="card-body">
+            <div class="field">
+                <label>Fichier RAA</label>
+                <select id="raaSelect"><option value="">Selectionner...</option></select>
+            </div>
+            <div class="field">
+                <label>Seuil anomalie (jours)</label>
+                <input type="number" id="seuilDuree" value="1" min="1">
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-amber" onclick="runEpisodes()" id="btnEpisodes">
+                    <span class="spinner"></span><span class="btn-text">Generer Episodes</span>
+                </button>
+                <button class="btn btn-ai btn-sm" onclick="analyzeEpisodesAI()" id="btnAnalyzeAI">Analyser avec IA</button>
+            </div>
+            <div id="episodeStats" style="margin-top:0.75rem;display:none;">
+                <div class="metrics cols-3">
+                    <div class="metric"><div class="val" id="nbEpisodes">&mdash;</div><div class="lbl">Episodes</div></div>
+                    <div class="metric emerald"><div class="val" id="nbAnomalies">&mdash;</div><div class="lbl">Anomalies</div></div>
+                    <div class="metric violet"><div class="val" id="nbAIAnomalies">&mdash;</div><div class="lbl">IA detectees</div></div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Fichiers Source -->
-        <div class="card">
-            <div class="card-header">
-                <h2>Fichiers Source</h2>
-                <button class="btn btn-sm btn-secondary" onclick="loadFiles()">Actualiser</button>
+    <!-- ========== IPP CHECKER ========== -->
+    <section class="card glow-ipp col-4">
+        <div class="card-head">
+            <h2>Verification IPP / DDN <span class="tag tag-ipp">OSPI</span></h2>
+        </div>
+        <div class="card-body">
+            <div class="notice notice-warning" style="font-size:0.78rem;">
+                <strong>Probleme OSPI / BI-Query</strong>
+                Detecte les IPP ayant plusieurs dates de naissance dans les donnees fusionnees
+                (bloque l'integration PMSI-Pilot vers BI-Query).
             </div>
-            <div class="card-body">
-                <div class="stats-row">
-                    <div class="stat-box rps"><div class="value" id="rpsCount">-</div><div class="label">RPS</div></div>
-                    <div class="stat-box raa"><div class="value" id="raaCount">-</div><div class="label">RAA</div></div>
-                    <div class="stat-box"><div class="value" id="otherCount">-</div><div class="label">Autres</div></div>
-                    <div class="stat-box"><div class="value" id="totalCount">-</div><div class="label">Total</div></div>
-                </div>
-                <div class="file-list" id="fileList">
-                    <div class="file-item"><span>Chargement...</span></div>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="runETL()" id="btnETL">
-                        <span class="spinner"></span>
-                        <span class="btn-text">Lancer Moulinettes</span>
-                    </button>
+            <div class="field">
+                <label>Annees a analyser</label>
+                <input type="text" id="ippYears" value="2018, 2019, 2020, 2021, 2022" placeholder="2018, 2019, 2020, 2021, 2022">
+            </div>
+            <div class="field">
+                <label>Dossier source (optionnel)</label>
+                <input type="text" id="ippSourceDir" placeholder="./data/pmsi (par defaut)">
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-amber" onclick="runIPPCheck()" id="btnIPPCheck">
+                    <span class="spinner"></span><span class="btn-text">Lancer verification</span>
+                </button>
+                <button class="btn btn-ghost btn-sm" onclick="downloadIPPReport()" id="btnIPPDownload" disabled>Telecharger rapport</button>
+            </div>
+            <div id="ippStats" style="margin-top:0.75rem;display:none;">
+                <div class="metrics cols-3">
+                    <div class="metric"><div class="val" id="ippTotalPatients">&mdash;</div><div class="lbl">Patients</div></div>
+                    <div class="metric rose"><div class="val" id="ippProblematic">&mdash;</div><div class="lbl">IPP problematiques</div></div>
+                    <div class="metric blue"><div class="val" id="ippFilesScanned">&mdash;</div><div class="lbl">Fichiers analyses</div></div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Episodes PSY -->
-        <div class="card">
-            <div class="card-header"><h2>Episodes Ambulatoires PSY</h2></div>
-            <div class="card-body">
-                <div class="input-group">
-                    <label>Fichier RAA</label>
-                    <select id="raaSelect"><option value="">Selectionner...</option></select>
-                </div>
-                <div class="input-group">
-                    <label>Seuil anomalie (jours)</label>
-                    <input type="number" id="seuilDuree" value="1" min="1">
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-warning" onclick="runEpisodes()" id="btnEpisodes">
-                        <span class="spinner"></span>
-                        <span class="btn-text">Generer Episodes</span>
-                    </button>
-                    <button class="btn btn-ai btn-sm" onclick="analyzeEpisodesAI()" id="btnAnalyzeAI">
-                        Analyser avec IA
-                    </button>
-                </div>
-                <div id="episodeStats" style="margin-top: 1rem; display: none;">
-                    <div class="stats-row" style="grid-template-columns: repeat(3, 1fr);">
-                        <div class="stat-box"><div class="value" id="nbEpisodes">-</div><div class="label">Episodes</div></div>
-                        <div class="stat-box success"><div class="value" id="nbAnomalies">-</div><div class="label">Anomalies</div></div>
-                        <div class="stat-box ai"><div class="value" id="nbAIAnomalies">-</div><div class="label">IA Detectees</div></div>
-                    </div>
-                </div>
+    <!-- ========== CONSOLE ========== -->
+    <section class="card col-8">
+        <div class="card-head">
+            <h2>Console <span class="tag tag-live">LIVE</span></h2>
+            <button class="btn btn-ghost btn-sm" onclick="clearLogs()">Effacer</button>
+        </div>
+        <div class="card-body">
+            <div class="console" id="console"><div class="log">En attente...</div></div>
+        </div>
+    </section>
+
+    <!-- ========== GHT ========== -->
+    <section class="card col-4">
+        <div class="card-head"><h2>Structure GHT (FICOM)</h2></div>
+        <div class="card-body">
+            <div class="field">
+                <label>Fichier Excel</label>
+                <select id="ghtSelect"><option value="">Selectionner...</option></select>
+            </div>
+            <div class="field">
+                <label>Format sortie</label>
+                <select id="ghtFormat">
+                    <option value="png">PNG</option>
+                    <option value="svg">SVG</option>
+                    <option value="pdf">PDF</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-emerald" onclick="runGHT()" id="btnGHT">
+                    <span class="spinner"></span><span class="btn-text">Generer Graphe</span>
+                </button>
+            </div>
+            <div id="ghtResults" style="margin-top:0.75rem;display:none;">
+                <div class="notice notice-success">Graphe genere ! <a href="#" id="ghtDownload" target="_blank">Voir HTML</a></div>
             </div>
         </div>
+    </section>
 
-        <!-- Console Logs -->
-        <div class="card wide">
-            <div class="card-header">
-                <h2>Console</h2>
-                <button class="btn btn-sm btn-secondary" onclick="clearLogs()">Effacer</button>
+    <!-- ========== RESULTS ========== -->
+    <section class="card col-12">
+        <div class="card-head"><h2>Resultats</h2></div>
+        <div class="card-body">
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="showTab('tabETL',this)">ETL</button>
+                <button class="tab-btn" onclick="showTab('tabAnomalies',this)">Anomalies</button>
+                <button class="tab-btn" onclick="showTab('tabIPP',this)" id="tabIPPBtn">IPP / DDN</button>
+                <button class="tab-btn" onclick="showTab('tabAI',this)" id="tabAIBtn">Analyse IA</button>
+                <button class="tab-btn" onclick="showTab('tabGHT',this)">Structure GHT</button>
             </div>
-            <div class="card-body">
-                <div class="console" id="console">
-                    <div class="log-line">En attente...</div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Structure GHT -->
-        <div class="card">
-            <div class="card-header"><h2>Structure GHT (FICOM)</h2></div>
-            <div class="card-body">
-                <div class="input-group">
-                    <label>Fichier Excel</label>
-                    <select id="ghtSelect"><option value="">Selectionner...</option></select>
+            <div id="tabETL" class="tab-panel active">
+                <table class="tbl"><thead><tr><th>Fichier</th><th>Lignes</th><th>Statut</th></tr></thead>
+                <tbody id="etlResults"><tr><td colspan="3" class="empty-state">Aucun resultat</td></tr></tbody></table>
+            </div>
+            <div id="tabAnomalies" class="tab-panel">
+                <table class="tbl"><thead><tr><th>Episode ID</th><th>Patient</th><th>Duree (j)</th><th>Anomalie</th></tr></thead>
+                <tbody id="anomaliesResults"><tr><td colspan="4" class="empty-state">Aucune anomalie</td></tr></tbody></table>
+            </div>
+            <div id="tabIPP" class="tab-panel">
+                <div id="ippResultsSummary" style="margin-bottom:0.75rem;">
+                    <p class="empty-state">Lancez une verification IPP pour voir les resultats</p>
                 </div>
-                <div class="input-group">
-                    <label>Format sortie</label>
-                    <select id="ghtFormat">
-                        <option value="png">PNG</option>
-                        <option value="svg">SVG</option>
-                        <option value="pdf">PDF</option>
-                    </select>
+                <div style="overflow-x:auto;">
+                    <table class="tbl"><thead>
+                        <tr><th>IPP</th><th>DDN distinctes</th><th>Dates de naissance</th><th>Sources</th><th>Annees</th><th>Occurrences</th><th>Detail</th></tr>
+                    </thead>
+                    <tbody id="ippResults"><tr><td colspan="7" class="empty-state">Aucun resultat</td></tr></tbody></table>
                 </div>
-                <div class="btn-group">
-                    <button class="btn btn-success" onclick="runGHT()" id="btnGHT">
-                        <span class="spinner"></span>
-                        <span class="btn-text">Generer Graphe</span>
-                    </button>
-                </div>
-                <div id="ghtResults" style="margin-top: 1rem; display: none;">
-                    <div class="alert alert-success">
-                        Graphe genere! <a href="#" id="ghtDownload" target="_blank">Voir HTML</a>
-                    </div>
-                </div>
+            </div>
+            <div id="tabAI" class="tab-panel">
+                <div id="aiResultsList"><p class="empty-state">Deposez un fichier ou lancez une analyse IA</p></div>
+            </div>
+            <div id="tabGHT" class="tab-panel">
+                <table class="tbl"><thead><tr><th>ID</th><th>Nom</th><th>Type</th></tr></thead>
+                <tbody id="ghtNodesResults"><tr><td colspan="3" class="empty-state">Aucune structure</td></tr></tbody></table>
             </div>
         </div>
+    </section>
 
-        <!-- Resultats -->
-        <div class="card full">
-            <div class="card-header"><h2>Resultats</h2></div>
-            <div class="card-body">
-                <div class="tabs">
-                    <button class="tab active" onclick="showTab('tabETL')">ETL</button>
-                    <button class="tab" onclick="showTab('tabAnomalies')">Anomalies</button>
-                    <button class="tab ai-tab" onclick="showTab('tabAI')">Analyse IA</button>
-                    <button class="tab" onclick="showTab('tabGHT')">Structure GHT</button>
-                </div>
+</main>
 
-                <div id="tabETL" class="tab-content active">
-                    <table class="results-table">
-                        <thead><tr><th>Fichier</th><th>Lignes</th><th>Statut</th></tr></thead>
-                        <tbody id="etlResults"><tr><td colspan="3" style="text-align:center">Aucun resultat</td></tr></tbody>
-                    </table>
-                </div>
-
-                <div id="tabAnomalies" class="tab-content">
-                    <table class="results-table">
-                        <thead><tr><th>Episode ID</th><th>Patient</th><th>Duree (j)</th><th>Anomalie</th></tr></thead>
-                        <tbody id="anomaliesResults"><tr><td colspan="4" style="text-align:center">Aucune anomalie</td></tr></tbody>
-                    </table>
-                </div>
-
-                <div id="tabAI" class="tab-content">
-                    <div id="aiResultsList">
-                        <p style="text-align: center; color: var(--text-light);">
-                            Deposez un fichier ou lancez une analyse pour voir les resultats IA
-                        </p>
-                    </div>
-                </div>
-
-                <div id="tabGHT" class="tab-content">
-                    <table class="results-table">
-                        <thead><tr><th>ID</th><th>Nom</th><th>Type</th></tr></thead>
-                        <tbody id="ghtNodesResults"><tr><td colspan="3" style="text-align:center">Aucune structure</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
+<!-- ========== IPP Detail Modal ========== -->
+<div class="modal-bg" id="ippModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="ippModalTitle">Detail IPP</h3>
+            <button class="modal-close" onclick="closeIPPModal()">&#10005;</button>
         </div>
-    </main>
+        <div id="ippModalContent">Chargement...</div>
+    </div>
+</div>
 
-    <footer>DIM - Donnees HDS securisees | Traitement 100% local | IA embarquee</footer>
+<footer>DIM &mdash; Donnees HDS securisees &middot; Traitement <span>100% local</span> &middot; IA embarquee</footer>
 
-    <script>
-        let files = [];
-        let eventSource = null;
-        let aiReady = false;
+<script>
+let files = [];
+let eventSource = null;
+let aiReady = false;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadFiles();
-            loadSystem();
-            checkAIStatus();
-            loadAvailableModels();
-            connectLogs();
-            setupDropZone();
-            setInterval(checkStatus, 5000);
+document.addEventListener('DOMContentLoaded', () => {
+    loadFiles(); loadSystem(); checkAIStatus(); loadAvailableModels(); connectLogs(); setupDropZone();
+    setInterval(checkStatus, 5000);
+});
+
+// ===== DROP ZONE =====
+function setupDropZone() {
+    const dz = document.getElementById('dropZone');
+    const fi = document.getElementById('fileInput');
+    dz.addEventListener('click', () => fi.click());
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+    dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); if (e.dataTransfer.files.length > 0) handleFileUpload(e.dataTransfer.files[0]); });
+    fi.addEventListener('change', e => { if (e.target.files.length > 0) handleFileUpload(e.target.files[0]); });
+}
+
+async function handleFileUpload(file) {
+    const dz = document.getElementById('dropZone');
+    const prog = document.getElementById('uploadProgress');
+    const bar = document.getElementById('progressBar');
+    const status = document.getElementById('progressStatus');
+    dz.classList.add('processing'); prog.style.display = 'block'; bar.style.width = '10%';
+    status.textContent = 'Upload du fichier...';
+    addLog('Fichier depose: ' + file.name, 'ai');
+    const fd = new FormData(); fd.append('file', file);
+    try {
+        bar.style.width = '20%'; status.textContent = 'Traitement ETL...';
+        const res = await fetch('/api/upload/analyze', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data.status === 'success') {
+            bar.style.width = '100%'; status.textContent = 'Analyse terminee !';
+            addLog('ETL termine: ' + data.rows_processed + ' lignes', 'success');
+            if (data.ai_analysis) { displayAIResults(data.ai_analysis); addLog('IA: ' + data.ai_analysis.summary, 'ai'); }
+            showTab('tabAI', document.getElementById('tabAIBtn'));
+        } else throw new Error(data.message || 'Erreur inconnue');
+    } catch (e) { addLog('Erreur: ' + e.message, 'error'); status.textContent = 'Erreur: ' + e.message; }
+    finally { dz.classList.remove('processing'); setTimeout(() => { prog.style.display = 'none'; bar.style.width = '0%'; }, 3000); }
+}
+
+function displayAIResults(analysis) {
+    const c = document.getElementById('aiResultsList');
+    let html = '';
+    if (analysis.episodes && analysis.episodes.length > 0) {
+        html += '<table class="tbl"><thead><tr><th>Episode</th><th>Duree</th><th>Analyse IA</th><th>Anomalie</th></tr></thead><tbody>';
+        analysis.episodes.slice(0, 50).forEach(ep => {
+            const cls = ep.is_anomaly ? 'row-ai' : '';
+            html += '<tr class="' + cls + '"><td style="font-family:JetBrains Mono,monospace">' + (ep.episode_id || '\u2014') + '</td>';
+            html += '<td>' + (ep.duree || '\u2014') + ' j</td>';
+            html += '<td style="max-width:400px;font-size:0.78rem;color:var(--text-secondary)">' + (ep.analysis || '\u2014') + '</td>';
+            html += '<td>' + (ep.is_anomaly ? '<span class="badge badge-danger">OUI</span>' : 'Non') + '</td></tr>';
         });
+        html += '</tbody></table>';
+    }
+    if (analysis.summary) html += '<div class="ai-block"><h4>Resume IA</h4><div class="analysis-text">' + analysis.summary + '</div></div>';
+    c.innerHTML = html || '<p class="empty-state">Aucune analyse disponible</p>';
+    document.getElementById('episodeStats').style.display = 'block';
+    document.getElementById('nbAIAnomalies').textContent = analysis.anomalies_count || 0;
+}
 
-        // ===== DROP ZONE =====
-        function setupDropZone() {
-            const dropZone = document.getElementById('dropZone');
-            const fileInput = document.getElementById('fileInput');
+// ===== AI =====
+async function checkAIStatus() {
+    try {
+        const res = await fetch('/api/ai/status'); const data = await res.json();
+        const dot = document.getElementById('aiDot'); const txt = document.getElementById('aiStatusText');
+        if (data.available || data.model_loaded) {
+            dot.classList.add('online'); txt.textContent = 'IA: Pret'; aiReady = true;
+            document.getElementById('aiHelp').style.display = 'none';
+        } else { dot.classList.remove('online'); txt.textContent = 'IA: Non connecte'; aiReady = false; }
+        document.getElementById('aiBackend').textContent = data.backend || 'N/A';
+        document.getElementById('aiModel').textContent = data.current_model ? data.current_model.split(':')[0] : 'N/A';
+    } catch(e) { document.getElementById('aiDot').classList.remove('online'); document.getElementById('aiStatusText').textContent = 'IA: Erreur'; }
+}
 
-            dropZone.addEventListener('click', () => fileInput.click());
+async function initAI() {
+    setLoading('btnInitAI', true); addLog("Initialisation de l'IA...", 'ai');
+    try {
+        const res = await fetch('/api/ai/init', { method: 'POST' }); const data = await res.json();
+        if (data.status === 'success') { addLog('IA initialisee: ' + data.model, 'success'); await checkAIStatus(); }
+        else addLog('Erreur IA: ' + data.message, 'error');
+    } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
+    finally { setLoading('btnInitAI', false); }
+}
 
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('dragover');
+async function downloadModel() {
+    const model = prompt('Nom du modele a telecharger:', 'mistral:7b-instruct');
+    if (!model) return; addLog('Telechargement: ' + model, 'ai');
+    try {
+        const res = await fetch('/api/ai/download', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({model}) });
+        const data = await res.json(); addLog(data.message, data.status === 'success' ? 'success' : 'error');
+    } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
+}
+
+async function createDimModel() {
+    setLoading('btnCreateModel', true); addLog('Creation du modele DIM-PMSI...', 'ai'); addLog('(Peut prendre plusieurs minutes)', 'warning');
+    try {
+        const res = await fetch('/api/ai/create-model', { method: 'POST' }); const data = await res.json();
+        if (data.status === 'started') { addLog('Creation en cours...', 'ai'); pollModelCreation(); }
+        else { addLog('Erreur: ' + data.message, 'error'); setLoading('btnCreateModel', false); }
+    } catch(e) { addLog('Erreur: ' + e.message, 'error'); setLoading('btnCreateModel', false); }
+}
+
+async function pollModelCreation() {
+    let attempts = 0;
+    const iv = setInterval(async () => {
+        attempts++;
+        try {
+            const res = await fetch('/api/results/create_model'); const data = await res.json();
+            if (data.status === 'success') { clearInterval(iv); addLog('Modele dim-pmsi cree !', 'success'); setLoading('btnCreateModel', false); await checkAIStatus(); await loadAvailableModels(); }
+            else if (data.status === 'error') { clearInterval(iv); addLog('Erreur: ' + data.message, 'error'); setLoading('btnCreateModel', false); }
+        } catch(e) {}
+        if (attempts >= 60) { clearInterval(iv); setLoading('btnCreateModel', false); addLog('Timeout creation modele', 'warning'); }
+    }, 5000);
+}
+
+async function loadAvailableModels() {
+    try {
+        const res = await fetch('/api/ai/models'); const data = await res.json();
+        if (data.status === 'success' && data.models.length > 0) {
+            document.getElementById('modelList').textContent = data.models.map(m => m.name).join(', ');
+            document.getElementById('availableModels').style.display = 'block';
+            if (data.has_dim_model) { document.getElementById('btnCreateModel').querySelector('.btn-text').textContent = 'dim-pmsi OK'; document.getElementById('btnCreateModel').disabled = true; }
+        }
+    } catch(e) {}
+}
+
+async function trainModel() {
+    const epochs = prompt("Nombre d'epochs:", '3'); if (!epochs) return;
+    setLoading('btnTrain', true); addLog('Demarrage entrainement...', 'ai');
+    try {
+        const checkRes = await fetch('/api/ai/training/check'); const checkData = await checkRes.json();
+        if (checkData.cuda) addLog('GPU: ' + checkData.gpu_name + ' \u2014 QLoRA', 'success');
+        else addLog('Pas de GPU \u2014 modele Ollama', 'warning');
+        const res = await fetch('/api/ai/training/start', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ epochs: parseInt(epochs), create_ollama: true }) });
+        const data = await res.json();
+        if (data.status === 'started') addLog('Entrainement demarre', 'ai');
+        else addLog('Erreur: ' + data.message, 'error');
+    } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
+    finally { setLoading('btnTrain', false); }
+}
+
+async function analyzeEpisodesAI() {
+    if (!aiReady) { addLog("Initialisez d'abord l'IA", 'warning'); return; }
+    const file = document.getElementById('raaSelect').value;
+    if (!file) { addLog('Selectionnez un fichier RAA', 'warning'); return; }
+    setLoading('btnAnalyzeAI', true); addLog('Analyse IA des episodes...', 'ai');
+    try {
+        const res = await fetch('/api/ai/analyze-file', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({file}) });
+        const data = await res.json();
+        if (data.status === 'success') { displayAIResults(data); addLog('Analyse terminee: ' + data.anomalies_count + ' anomalies', 'success'); showTab('tabAI', document.getElementById('tabAIBtn')); }
+        else addLog('Erreur: ' + data.message, 'error');
+    } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
+    finally { setLoading('btnAnalyzeAI', false); }
+}
+
+// ===== FILES =====
+async function loadFiles() {
+    try {
+        const res = await fetch('/api/files'); const data = await res.json();
+        if (data.status === 'success') {
+            files = data.files; renderFiles(files); updateSelects(files);
+            document.getElementById('totalCount').textContent = files.length;
+            document.getElementById('rpsCount').textContent = data.summary.RPS || 0;
+            document.getElementById('raaCount').textContent = data.summary.RAA || 0;
+            document.getElementById('otherCount').textContent = (data.summary.VID_HOSP||0)+(data.summary.VID_IPP||0)+(data.summary.RSF_ACE||0)+(data.summary.RUM_RSS||0)+(data.summary.UNKNOWN||0);
+        }
+    } catch(e) {}
+}
+
+function renderFiles(fileArr) {
+    const list = document.getElementById('fileList');
+    if (fileArr.length === 0) { list.innerHTML = '<div class="file-item"><span class="name" style="color:var(--text-muted)">Aucun fichier trouve</span></div>'; return; }
+    list.innerHTML = fileArr.map(f =>
+        '<div class="file-item"><input type="checkbox" value="'+f.name+'" class="file-cb"><span class="name">'+f.name+'</span><span class="file-type-tag '+f.type+'">'+f.type+'</span><span class="file-size">'+f.size_mb+' MB</span></div>'
+    ).join('');
+}
+
+function updateSelects(fileArr) {
+    const raa = fileArr.filter(f => f.type === 'RAA');
+    const xl = fileArr.filter(f => f.name.endsWith('.xlsx') || f.name.endsWith('.xls'));
+    document.getElementById('raaSelect').innerHTML = '<option value="">Selectionner...</option>' + raa.map(f => '<option value="'+f.name+'">'+f.name+'</option>').join('');
+    document.getElementById('ghtSelect').innerHTML = '<option value="">Selectionner...</option>' + xl.map(f => '<option value="'+f.name+'">'+f.name+'</option>').join('');
+}
+
+async function loadSystem() {
+    try { const res = await fetch('/api/system'); const data = await res.json(); updateButtons(data); } catch(e) {}
+}
+
+function updateButtons(data) {
+    document.getElementById('btnETL').disabled = data.etl_running;
+    document.getElementById('btnEpisodes').disabled = data.episodes_running;
+    document.getElementById('btnGHT').disabled = data.ght_running;
+    var ippBtn = document.getElementById('btnIPPCheck');
+    if (ippBtn) { ippBtn.disabled = data.ipp_check_running; if (data.ipp_check_running) ippBtn.classList.add('loading'); }
+    var pill = document.getElementById('systemStatus');
+    var running = data.etl_running || data.episodes_running || data.ght_running || data.ipp_check_running;
+    if (running) pill.innerHTML = '<span class="dot" style="background:var(--accent-amber);box-shadow:0 0 8px rgba(245,158,11,0.5)"></span> En cours...';
+    else pill.innerHTML = '<span class="dot online"></span> En ligne';
+}
+
+// ===== ACTIONS =====
+async function runETL() {
+    var selected = Array.from(document.querySelectorAll('.file-cb:checked')).map(c => c.value);
+    setLoading('btnETL', true);
+    try {
+        const res = await fetch('/api/etl/run', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({files: selected, force_reprocess: false}) });
+        const data = await res.json(); addLog(data.message); loadSystem();
+    } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
+    finally { setLoading('btnETL', false); }
+}
+
+async function runEpisodes() {
+    var file = document.getElementById('raaSelect').value;
+    var seuil = parseInt(document.getElementById('seuilDuree').value);
+    if (!file) { addLog('Selectionnez un fichier RAA', 'warning'); return; }
+    setLoading('btnEpisodes', true);
+    try {
+        const res = await fetch('/api/episodes/run', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({input_file: file, seuil_duree: seuil, max_gap: 1}) });
+        const data = await res.json(); addLog(data.message); loadSystem();
+    } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
+    finally { setLoading('btnEpisodes', false); }
+}
+
+async function runGHT() {
+    var file = document.getElementById('ghtSelect').value;
+    var fmt = document.getElementById('ghtFormat').value;
+    if (!file) { addLog('Selectionnez un fichier Excel', 'warning'); return; }
+    setLoading('btnGHT', true);
+    try {
+        const res = await fetch('/api/ght/run', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({excel_file: file, output_format: fmt}) });
+        const data = await res.json(); addLog(data.message); loadSystem();
+    } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
+    finally { setLoading('btnGHT', false); }
+}
+
+function setLoading(btnId, loading) {
+    var btn = document.getElementById(btnId); if (!btn) return;
+    if (loading) btn.classList.add('loading'); else btn.classList.remove('loading');
+    btn.disabled = loading;
+}
+
+// ===== LOGS =====
+function connectLogs() {
+    eventSource = new EventSource('/api/logs/stream');
+    eventSource.onmessage = function(e) { var data = JSON.parse(e.data); addLog(data.log); checkResults(); };
+    eventSource.onerror = function() { setTimeout(connectLogs, 5000); };
+}
+
+function addLog(msg, type) {
+    type = type || 'info';
+    var el = document.getElementById('console');
+    var line = document.createElement('div');
+    line.className = 'log ' + type; line.textContent = msg;
+    el.appendChild(line); el.scrollTop = el.scrollHeight;
+}
+
+async function clearLogs() {
+    await fetch('/api/logs', {method: 'DELETE'});
+    document.getElementById('console').innerHTML = '<div class="log">Logs effaces</div>';
+}
+
+// ===== RESULTS =====
+async function checkResults() {
+    try {
+        const res = await fetch('/api/results'); const data = await res.json();
+        if (data.etl && data.etl.results) renderETLResults(data.etl.results);
+        if (data.episodes) renderEpisodeResults(data.episodes);
+        if (data.ght) renderGHTResults(data.ght);
+        if (data.ipp_check && data.ipp_check.status === 'completed') renderIPPResults(data.ipp_check);
+    } catch(e) {}
+}
+
+function renderETLResults(results) {
+    document.getElementById('etlResults').innerHTML = results.map(r =>
+        '<tr><td style="font-family:JetBrains Mono,monospace">'+r.file+'</td><td>'+r.rows.toLocaleString()+'</td><td style="color:'+(r.status==='success'?'var(--accent-emerald)':'var(--accent-rose)')+'">'+r.status+'</td></tr>'
+    ).join('');
+}
+
+function renderEpisodeResults(data) {
+    document.getElementById('episodeStats').style.display = 'block';
+    document.getElementById('nbEpisodes').textContent = (data.stats && data.stats.nb_episodes) || '\u2014';
+    document.getElementById('nbAnomalies').textContent = data.anomalies_count || 0;
+    if (data.anomalies && data.anomalies.length > 0) {
+        document.getElementById('anomaliesResults').innerHTML = data.anomalies.slice(0, 50).map(a =>
+            '<tr class="row-danger"><td>'+(a.EPISODE_ID||'\u2014')+'</td><td>'+(a.NO_PATIENT||'\u2014')+'</td><td>'+(a.DUREE_EPISODE_JOURS||'\u2014')+'</td><td>'+(a.TYPE_ANOMALIE||'DUREE_EXCESSIVE')+'</td></tr>'
+        ).join('');
+    }
+}
+
+function renderGHTResults(data) {
+    document.getElementById('ghtResults').style.display = 'block';
+    if (data.outputs && data.outputs.html) { var fn = data.outputs.html.split(/[\\/]/).pop(); document.getElementById('ghtDownload').href = '/api/download/' + fn; }
+    if (data.nodes && data.nodes.length > 0) {
+        document.getElementById('ghtNodesResults').innerHTML = data.nodes.slice(0, 30).map(n =>
+            '<tr><td>'+n.id+'</td><td>'+n.name+'</td><td>'+n.type+'</td></tr>'
+        ).join('');
+    }
+}
+
+function showTab(tabId, btn) {
+    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active', 'ai-active'));
+    document.querySelectorAll('.tab-panel').forEach(c => c.classList.remove('active'));
+    if (btn) btn.classList.add(tabId === 'tabAI' ? 'ai-active' : 'active');
+    document.getElementById(tabId).classList.add('active');
+}
+
+async function checkStatus() { await loadSystem(); await checkAIStatus(); }
+
+// ===== IPP CHECKER =====
+async function runIPPCheck() {
+    var yearsRaw = document.getElementById('ippYears').value;
+    var sourceDir = document.getElementById('ippSourceDir').value;
+    var years = yearsRaw.split(/[,;\s]+/).filter(y => y.trim()).map(y => y.trim());
+    if (years.length === 0) { addLog('Specifiez au moins une annee', 'warning'); return; }
+    setLoading('btnIPPCheck', true); addLog('Verification IPP DDN multiples: ' + years.join(', ') + '...', 'warning');
+    try {
+        var body = { years: years, export: true }; if (sourceDir) body.source_dir = sourceDir;
+        const res = await fetch('/api/ipp-check/run', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+        const data = await res.json();
+        if (data.status === 'started') { addLog('Verification en cours...', 'warning'); pollIPPResults(); }
+        else { addLog('Erreur: ' + data.message, 'error'); setLoading('btnIPPCheck', false); }
+    } catch(e) { addLog('Erreur: ' + e.message, 'error'); setLoading('btnIPPCheck', false); }
+}
+
+function pollIPPResults() {
+    var attempts = 0;
+    var iv = setInterval(async () => {
+        attempts++;
+        try {
+            const res = await fetch('/api/results/ipp_check'); const data = await res.json();
+            if (data.status === 'completed') {
+                clearInterval(iv); setLoading('btnIPPCheck', false);
+                renderIPPResults(data); showTab('tabIPP', document.getElementById('tabIPPBtn'));
+                if (data.total_problematic > 0) addLog('ALERTE: ' + data.total_problematic + ' IPP avec DDN multiples !', 'error');
+                else addLog('OK: Aucun IPP problematique', 'success');
+            } else if (data.status === 'error') { clearInterval(iv); setLoading('btnIPPCheck', false); addLog('Erreur: ' + data.message, 'error'); }
+        } catch(e) {}
+        if (attempts >= 120) { clearInterval(iv); setLoading('btnIPPCheck', false); addLog('Timeout IPP', 'warning'); }
+    }, 3000);
+}
+
+function renderIPPResults(data) {
+    var stats = data.stats || {};
+    document.getElementById('ippStats').style.display = 'block';
+    document.getElementById('ippTotalPatients').textContent = (stats.unique_patients || 0).toLocaleString();
+    document.getElementById('ippProblematic').textContent = (stats.patients_multi_ddn || 0).toLocaleString();
+    document.getElementById('ippFilesScanned').textContent = stats.files_scanned || 0;
+    if (data.exported_files && Object.keys(data.exported_files).length > 0) document.getElementById('btnIPPDownload').disabled = false;
+
+    var summary = document.getElementById('ippResultsSummary');
+    if (data.total_problematic > 0) {
+        summary.innerHTML = '<div class="notice notice-danger"><strong>\u26A0 ' + data.total_problematic + ' IPP avec dates de naissance multiples</strong>' +
+            'Ces patients ont des DDN differentes dans les fichiers PMSI fusionnes \u2014 bloque l\'integration BI-Query depuis PMSI-Pilot.<br>' +
+            '<span style="font-size:0.75rem;color:var(--text-muted)">Fichiers: '+(stats.files_scanned||0)+' \u00B7 Patients: '+(stats.unique_patients||0).toLocaleString()+' \u00B7 Annees: '+(stats.years_covered||[]).join(', ')+'</span></div>';
+    } else {
+        summary.innerHTML = '<div class="notice notice-success"><strong>\u2713 Aucun probleme detecte</strong>Tous les patients ont une date de naissance unique. Fichiers: '+(stats.files_scanned||0)+' \u00B7 Patients: '+(stats.unique_patients||0).toLocaleString()+'</div>';
+    }
+
+    var tbody = document.getElementById('ippResults');
+    if (data.problematic_ipps && data.problematic_ipps.length > 0) {
+        tbody.innerHTML = data.problematic_ipps.slice(0, 100).map(ipp =>
+            '<tr class="row-danger"><td style="font-family:JetBrains Mono,monospace;font-weight:600">'+(ipp.IPP||'\u2014')+'</td>' +
+            '<td><span class="badge badge-danger">'+(ipp.NB_DDN_DISTINCTES||'\u2014')+'</span></td>' +
+            '<td>'+(ipp.DATES_NAISSANCE||'\u2014')+'</td>' +
+            '<td style="font-size:0.72rem;max-width:180px;word-break:break-all;color:var(--text-muted)">'+(ipp.SOURCES||'\u2014')+'</td>' +
+            '<td>'+(ipp.ANNEES||'\u2014')+'</td><td>'+(ipp.NB_OCCURRENCES||'\u2014')+'</td>' +
+            '<td><button class="detail-btn" onclick="showIPPDetail(\''+ipp.IPP+'\')">Voir</button></td></tr>'
+        ).join('');
+    } else {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state" style="color:var(--accent-emerald)">Aucun IPP problematique</td></tr>';
+    }
+    var tabBtn = document.getElementById('tabIPPBtn');
+    if (data.total_problematic > 0) tabBtn.classList.add('ipp-alert'); else tabBtn.classList.remove('ipp-alert');
+}
+
+async function showIPPDetail(ipp) {
+    var modal = document.getElementById('ippModal'); var title = document.getElementById('ippModalTitle'); var content = document.getElementById('ippModalContent');
+    modal.classList.add('open'); title.textContent = 'Detail IPP: ' + ipp; content.innerHTML = '<p style="color:var(--text-muted)">Chargement...</p>';
+    try {
+        const res = await fetch('/api/ipp-check/detail/' + encodeURIComponent(ipp)); const data = await res.json();
+        if (data.status === 'success' && data.records.length > 0) {
+            var html = '<table class="tbl"><thead><tr><th>IPP</th><th>Date Naissance</th><th>Fichier Source</th><th>Type</th><th>Annee</th></tr></thead><tbody>';
+            data.records.forEach(r => {
+                html += '<tr><td style="font-family:JetBrains Mono,monospace">'+(r.IPP||'\u2014')+'</td>' +
+                    '<td style="font-weight:600;color:var(--accent-amber)">'+(r.DATE_NAISSANCE||'\u2014')+'</td>' +
+                    '<td style="font-size:0.78rem">'+(r.SOURCE_FILE||'\u2014')+'</td><td>'+(r.FILE_TYPE||'\u2014')+'</td><td>'+(r.ANNEE||'\u2014')+'</td></tr>';
             });
-
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.classList.remove('dragover');
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    handleFileUpload(files[0]);
-                }
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    handleFileUpload(e.target.files[0]);
-                }
-            });
-        }
-
-        async function handleFileUpload(file) {
-            const dropZone = document.getElementById('dropZone');
-            const progress = document.getElementById('uploadProgress');
-            const progressBar = document.getElementById('progressBar');
-            const progressStatus = document.getElementById('progressStatus');
-
-            dropZone.classList.add('processing');
-            progress.style.display = 'block';
-            progressBar.style.width = '10%';
-            progressStatus.textContent = 'Upload du fichier...';
-
-            addLog('Fichier depose: ' + file.name, 'ai');
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                // 1. Upload
-                progressBar.style.width = '20%';
-                progressStatus.textContent = 'Traitement ETL...';
-
-                const uploadRes = await fetch('/api/upload/analyze', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await uploadRes.json();
-
-                if (result.status === 'success') {
-                    progressBar.style.width = '100%';
-                    progressStatus.textContent = 'Analyse terminee!';
-
-                    addLog('ETL termine: ' + result.rows_processed + ' lignes', 'success');
-
-                    if (result.ai_analysis) {
-                        displayAIResults(result.ai_analysis);
-                        addLog('IA: ' + result.ai_analysis.summary, 'ai');
-                    }
-
-                    // Afficher les resultats
-                    showTab('tabAI');
-
-                } else {
-                    throw new Error(result.message || 'Erreur inconnue');
-                }
-
-            } catch (e) {
-                addLog('Erreur: ' + e.message, 'error');
-                progressStatus.textContent = 'Erreur: ' + e.message;
-            } finally {
-                dropZone.classList.remove('processing');
-                setTimeout(() => {
-                    progress.style.display = 'none';
-                    progressBar.style.width = '0%';
-                }, 3000);
-            }
-        }
-
-        function displayAIResults(analysis) {
-            const container = document.getElementById('aiResultsList');
-
-            let html = '';
-
-            if (analysis.episodes && analysis.episodes.length > 0) {
-                html += '<table class="results-table">';
-                html += '<thead><tr><th>Episode</th><th>Duree</th><th>Analyse IA</th><th>Anomalie</th></tr></thead>';
-                html += '<tbody>';
-
-                analysis.episodes.slice(0, 50).forEach(ep => {
-                    const rowClass = ep.is_anomaly ? 'ai-anomaly' : '';
-                    html += `<tr class="${rowClass}">
-                        <td>${ep.episode_id || '-'}</td>
-                        <td>${ep.duree || '-'} j</td>
-                        <td style="max-width: 400px; font-size: 0.8rem;">${ep.analysis || '-'}</td>
-                        <td>${ep.is_anomaly ? 'OUI' : 'Non'}</td>
-                    </tr>`;
-                });
-
-                html += '</tbody></table>';
-            }
-
-            if (analysis.summary) {
-                html += `<div class="ai-result" style="margin-top: 1rem;">
-                    <h4>Resume IA</h4>
-                    <div class="analysis">${analysis.summary}</div>
-                </div>`;
-            }
-
-            container.innerHTML = html || '<p>Aucune analyse disponible</p>';
-
-            // Update stats
-            document.getElementById('episodeStats').style.display = 'block';
-            document.getElementById('nbAIAnomalies').textContent = analysis.anomalies_count || 0;
-        }
-
-        // ===== AI STATUS =====
-        async function checkAIStatus() {
-            try {
-                const res = await fetch('/api/ai/status');
-                const data = await res.json();
-
-                const dot = document.getElementById('aiDot');
-                const text = document.getElementById('aiStatusText');
-                const backend = document.getElementById('aiBackend');
-                const model = document.getElementById('aiModel');
-
-                if (data.available || data.model_loaded) {
-                    dot.classList.remove('offline');
-                    text.textContent = 'IA: Pret';
-                    aiReady = true;
-                    document.getElementById('aiHelp').style.display = 'none';
-                } else {
-                    dot.classList.add('offline');
-                    text.textContent = 'IA: Non connecte';
-                    aiReady = false;
-                }
-
-                backend.textContent = data.backend || 'N/A';
-                model.textContent = data.current_model?.split(':')[0] || 'N/A';
-
-            } catch(e) {
-                document.getElementById('aiDot').classList.add('offline');
-                document.getElementById('aiStatusText').textContent = 'IA: Erreur';
-            }
-        }
-
-        async function initAI() {
-            setLoading('btnInitAI', true);
-            addLog('Initialisation de l\'IA...', 'ai');
-
-            try {
-                const res = await fetch('/api/ai/init', { method: 'POST' });
-                const data = await res.json();
-
-                if (data.status === 'success') {
-                    addLog('IA initialisee: ' + data.model, 'success');
-                    await checkAIStatus();
-                } else {
-                    addLog('Erreur IA: ' + data.message, 'error');
-                }
-            } catch(e) {
-                addLog('Erreur: ' + e.message, 'error');
-            } finally {
-                setLoading('btnInitAI', false);
-            }
-        }
-
-        async function downloadModel() {
-            const model = prompt('Nom du modele a telecharger:', 'mistral:7b-instruct');
-            if (!model) return;
-
-            addLog('Telechargement du modele: ' + model, 'ai');
-
-            try {
-                const res = await fetch('/api/ai/download', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({model: model})
-                });
-                const data = await res.json();
-                addLog(data.message, data.status === 'success' ? 'success' : 'error');
-            } catch(e) {
-                addLog('Erreur: ' + e.message, 'error');
-            }
-        }
-
-        async function createDimModel() {
-            setLoading('btnCreateModel', true);
-            addLog('Creation du modele DIM-PMSI personnalise...', 'ai');
-            addLog('(Cela peut prendre plusieurs minutes si le modele de base doit etre telecharge)', 'warning');
-
-            try {
-                const res = await fetch('/api/ai/create-model', { method: 'POST' });
-                const data = await res.json();
-
-                if (data.status === 'started') {
-                    addLog('Creation du modele en cours...', 'ai');
-                    // Poll for completion
-                    pollModelCreation();
-                } else {
-                    addLog('Erreur: ' + data.message, 'error');
-                    setLoading('btnCreateModel', false);
-                }
-            } catch(e) {
-                addLog('Erreur: ' + e.message, 'error');
-                setLoading('btnCreateModel', false);
-            }
-        }
-
-        async function pollModelCreation() {
-            const maxAttempts = 60; // 5 minutes max
-            let attempts = 0;
-
-            const checkInterval = setInterval(async () => {
-                attempts++;
-
-                try {
-                    const res = await fetch('/api/results/create_model');
-                    const data = await res.json();
-
-                    if (data.status === 'success') {
-                        clearInterval(checkInterval);
-                        addLog('Modele dim-pmsi cree avec succes!', 'success');
-                        setLoading('btnCreateModel', false);
-                        await checkAIStatus();
-                        await loadAvailableModels();
-                    } else if (data.status === 'error') {
-                        clearInterval(checkInterval);
-                        addLog('Erreur: ' + data.message, 'error');
-                        setLoading('btnCreateModel', false);
-                    }
-                } catch(e) {
-                    // Continue polling
-                }
-
-                if (attempts >= maxAttempts) {
-                    clearInterval(checkInterval);
-                    addLog('Timeout: La creation du modele prend trop de temps', 'warning');
-                    setLoading('btnCreateModel', false);
-                }
-            }, 5000);
-        }
-
-        async function loadAvailableModels() {
-            try {
-                const res = await fetch('/api/ai/models');
-                const data = await res.json();
-
-                if (data.status === 'success' && data.models.length > 0) {
-                    const modelNames = data.models.map(m => m.name).join(', ');
-                    document.getElementById('modelList').textContent = modelNames;
-                    document.getElementById('availableModels').style.display = 'block';
-
-                    if (data.has_dim_model) {
-                        document.getElementById('btnCreateModel').textContent = 'Modele DIM-PMSI pret';
-                        document.getElementById('btnCreateModel').disabled = true;
-                    }
-                }
-            } catch(e) {
-                console.log('Could not load models');
-            }
-        }
-
-        async function trainModel() {
-            const epochs = prompt('Nombre d\'epochs pour l\'entrainement:', '3');
-            if (!epochs) return;
-
-            setLoading('btnTrain', true);
-            addLog('Demarrage de l\'entrainement...', 'ai');
-
-            try {
-                // Check requirements first
-                const checkRes = await fetch('/api/ai/training/check');
-                const checkData = await checkRes.json();
-
-                if (checkData.cuda) {
-                    addLog('GPU detecte: ' + checkData.gpu_name + ' - Fine-tuning QLoRA', 'success');
-                } else {
-                    addLog('Pas de GPU - Creation d\'un modele Ollama personnalise', 'warning');
-                }
-
-                // Start training
-                const res = await fetch('/api/ai/training/start', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        epochs: parseInt(epochs),
-                        create_ollama: true
-                    })
-                });
-                const data = await res.json();
-
-                if (data.status === 'started') {
-                    addLog('Entrainement demarre - Suivez la progression dans la console', 'ai');
-                } else {
-                    addLog('Erreur: ' + data.message, 'error');
-                }
-            } catch(e) {
-                addLog('Erreur: ' + e.message, 'error');
-            } finally {
-                setLoading('btnTrain', false);
-            }
-        }
-
-        async function analyzeEpisodesAI() {
-            if (!aiReady) {
-                addLog('Veuillez d\'abord initialiser l\'IA', 'warning');
-                return;
-            }
-
-            const file = document.getElementById('raaSelect').value;
-            if (!file) {
-                addLog('Selectionnez un fichier RAA', 'warning');
-                return;
-            }
-
-            setLoading('btnAnalyzeAI', true);
-            addLog('Analyse IA des episodes...', 'ai');
-
-            try {
-                const res = await fetch('/api/ai/analyze-file', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({file: file})
-                });
-                const data = await res.json();
-
-                if (data.status === 'success') {
-                    displayAIResults(data);
-                    addLog('Analyse terminee: ' + data.anomalies_count + ' anomalies detectees', 'success');
-                    showTab('tabAI');
-                } else {
-                    addLog('Erreur: ' + data.message, 'error');
-                }
-            } catch(e) {
-                addLog('Erreur: ' + e.message, 'error');
-            } finally {
-                setLoading('btnAnalyzeAI', false);
-            }
-        }
-
-        // ===== FILES =====
-        async function loadFiles() {
-            try {
-                const res = await fetch('/api/files');
-                const data = await res.json();
-                if (data.status === 'success') {
-                    files = data.files;
-                    renderFiles(files);
-                    updateSelects(files);
-                    document.getElementById('totalCount').textContent = files.length;
-                    document.getElementById('rpsCount').textContent = data.summary.RPS || 0;
-                    document.getElementById('raaCount').textContent = data.summary.RAA || 0;
-                    document.getElementById('otherCount').textContent = (data.summary.VID_HOSP || 0) + (data.summary.UNKNOWN || 0);
-                }
-            } catch(e) { console.error(e); }
-        }
-
-        function renderFiles(files) {
-            const list = document.getElementById('fileList');
-            list.innerHTML = files.map(f => `
-                <div class="file-item">
-                    <input type="checkbox" value="${f.name}" class="file-cb">
-                    <span class="name">${f.name}</span>
-                    <span class="file-type ${f.type}">${f.type}</span>
-                    <span class="file-size">${f.size_mb} MB</span>
-                </div>
-            `).join('');
-        }
-
-        function updateSelects(files) {
-            const raaFiles = files.filter(f => f.type === 'RAA');
-            const excelFiles = files.filter(f => f.name.endsWith('.xlsx') || f.name.endsWith('.xls'));
-
-            document.getElementById('raaSelect').innerHTML =
-                '<option value="">Selectionner...</option>' +
-                raaFiles.map(f => `<option value="${f.name}">${f.name}</option>`).join('');
-
-            document.getElementById('ghtSelect').innerHTML =
-                '<option value="">Selectionner...</option>' +
-                excelFiles.map(f => `<option value="${f.name}">${f.name}</option>`).join('');
-        }
-
-        async function loadSystem() {
-            try {
-                const res = await fetch('/api/system');
-                const data = await res.json();
-                updateButtons(data);
-            } catch(e) {}
-        }
-
-        function updateButtons(data) {
-            document.getElementById('btnETL').disabled = data.etl_running;
-            document.getElementById('btnEpisodes').disabled = data.episodes_running;
-            document.getElementById('btnGHT').disabled = data.ght_running;
-
-            const status = document.getElementById('systemStatus');
-            if (data.etl_running || data.episodes_running || data.ght_running) {
-                status.textContent = 'En cours...';
-                status.style.background = 'rgba(255,193,7,0.3)';
-            } else {
-                status.textContent = 'En ligne';
-                status.style.background = 'rgba(255,255,255,0.2)';
-            }
-        }
-
-        // ===== ACTIONS =====
-        async function runETL() {
-            const selected = Array.from(document.querySelectorAll('.file-cb:checked')).map(c => c.value);
-            setLoading('btnETL', true);
-            try {
-                const res = await fetch('/api/etl/run', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({files: selected, force_reprocess: false})
-                });
-                const data = await res.json();
-                addLog(data.message);
-                loadSystem();
-            } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
-            finally { setLoading('btnETL', false); }
-        }
-
-        async function runEpisodes() {
-            const file = document.getElementById('raaSelect').value;
-            const seuil = parseInt(document.getElementById('seuilDuree').value);
-            if (!file) { addLog('Selectionnez un fichier RAA', 'warning'); return; }
-            setLoading('btnEpisodes', true);
-            try {
-                const res = await fetch('/api/episodes/run', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({input_file: file, seuil_duree: seuil, max_gap: 1})
-                });
-                const data = await res.json();
-                addLog(data.message);
-                loadSystem();
-            } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
-            finally { setLoading('btnEpisodes', false); }
-        }
-
-        async function runGHT() {
-            const file = document.getElementById('ghtSelect').value;
-            const format = document.getElementById('ghtFormat').value;
-            if (!file) { addLog('Selectionnez un fichier Excel', 'warning'); return; }
-            setLoading('btnGHT', true);
-            try {
-                const res = await fetch('/api/ght/run', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({excel_file: file, output_format: format})
-                });
-                const data = await res.json();
-                addLog(data.message);
-                loadSystem();
-            } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
-            finally { setLoading('btnGHT', false); }
-        }
-
-        function setLoading(btnId, loading) {
-            const btn = document.getElementById(btnId);
-            if (loading) btn.classList.add('loading');
-            else btn.classList.remove('loading');
-            btn.disabled = loading;
-        }
-
-        // ===== LOGS =====
-        function connectLogs() {
-            eventSource = new EventSource('/api/logs/stream');
-            eventSource.onmessage = (e) => {
-                const data = JSON.parse(e.data);
-                addLog(data.log);
-                checkResults();
-            };
-            eventSource.onerror = () => setTimeout(connectLogs, 5000);
-        }
-
-        function addLog(msg, type = 'info') {
-            const consoleEl = document.getElementById('console');
-            const line = document.createElement('div');
-            line.className = 'log-line ' + type;
-            line.textContent = msg;
-            consoleEl.appendChild(line);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
-        }
-
-        async function clearLogs() {
-            await fetch('/api/logs', {method: 'DELETE'});
-            document.getElementById('console').innerHTML = '<div class="log-line">Logs effaces</div>';
-        }
-
-        // ===== RESULTS =====
-        async function checkResults() {
-            try {
-                const res = await fetch('/api/results');
-                const data = await res.json();
-
-                if (data.etl && data.etl.results) renderETLResults(data.etl.results);
-                if (data.episodes) renderEpisodeResults(data.episodes);
-                if (data.ght) renderGHTResults(data.ght);
-            } catch(e) {}
-        }
-
-        function renderETLResults(results) {
-            document.getElementById('etlResults').innerHTML = results.map(r => `
-                <tr>
-                    <td>${r.file}</td>
-                    <td>${r.rows.toLocaleString()}</td>
-                    <td style="color:${r.status==='success'?'var(--success)':'var(--danger)'}">${r.status}</td>
-                </tr>
-            `).join('');
-        }
-
-        function renderEpisodeResults(data) {
-            document.getElementById('episodeStats').style.display = 'block';
-            document.getElementById('nbEpisodes').textContent = data.stats?.nb_episodes || '-';
-            document.getElementById('nbAnomalies').textContent = data.anomalies_count || 0;
-
-            if (data.anomalies && data.anomalies.length > 0) {
-                document.getElementById('anomaliesResults').innerHTML = data.anomalies.slice(0, 50).map(a => `
-                    <tr class="anomaly">
-                        <td>${a.EPISODE_ID || '-'}</td>
-                        <td>${a.NO_PATIENT || '-'}</td>
-                        <td>${a.DUREE_EPISODE_JOURS || '-'}</td>
-                        <td>${a.TYPE_ANOMALIE || 'DUREE_EXCESSIVE'}</td>
-                    </tr>
-                `).join('');
-            }
-        }
-
-        function renderGHTResults(data) {
-            document.getElementById('ghtResults').style.display = 'block';
-            if (data.outputs && data.outputs.html) {
-                const filename = data.outputs.html.split(/[\\/]/).pop();
-                document.getElementById('ghtDownload').href = '/api/download/' + filename;
-            }
-            if (data.nodes && data.nodes.length > 0) {
-                document.getElementById('ghtNodesResults').innerHTML = data.nodes.slice(0, 30).map(n => `
-                    <tr><td>${n.id}</td><td>${n.name}</td><td>${n.type}</td></tr>
-                `).join('');
-            }
-        }
-
-        function showTab(tabId) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        }
-
-        async function checkStatus() {
-            await loadSystem();
-            await checkAIStatus();
-        }
-    </script>
+            html += '</tbody></table>'; content.innerHTML = html;
+        } else content.innerHTML = '<p class="empty-state">Aucun detail disponible. Relancez la verification.</p>';
+    } catch(e) { content.innerHTML = '<p style="color:var(--accent-rose)">Erreur: ' + e.message + '</p>'; }
+}
+
+function closeIPPModal() { document.getElementById('ippModal').classList.remove('open'); }
+document.addEventListener('click', e => { if (e.target.classList.contains('modal-bg')) closeIPPModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeIPPModal(); });
+
+async function downloadIPPReport() {
+    try {
+        const res = await fetch('/api/results/ipp_check'); const data = await res.json();
+        if (data.exported_files) {
+            if (data.exported_files.resume) { var fn = data.exported_files.resume.split(/[\\/]/).pop(); window.open('/api/download/' + fn, '_blank'); }
+            if (data.exported_files.detail) { var fn2 = data.exported_files.detail.split(/[\\/]/).pop(); setTimeout(() => window.open('/api/download/' + fn2, '_blank'), 500); }
+        } else addLog('Aucun fichier a telecharger', 'warning');
+    } catch(e) { addLog('Erreur: ' + e.message, 'error'); }
+}
+</script>
 </body>
 </html>

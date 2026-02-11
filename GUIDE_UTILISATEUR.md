@@ -178,6 +178,14 @@ PyTorch ne trouve pas de carte graphique NVIDIA.
 → Installez les drivers CUDA : https://developer.nvidia.com/cuda-downloads
 → Réinstallez PyTorch avec support CUDA
 
+```bash
+# Pour CUDA 11.8
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# Pour CUDA 12.1
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
+
 ### "Erreur de parsing"
 
 Le format du fichier n'est pas reconnu.

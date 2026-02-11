@@ -169,6 +169,9 @@ peft            # Fine-tuning LoRA
 bitsandbytes    # Quantification 4-bit
 trl             # Training LLM
 loguru          # Logging
+cryptography    # Securite
+rich            # Affichage console enrichi
+tqdm            # Barre de progression
 ```
 
 ## Contribution

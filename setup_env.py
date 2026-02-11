@@ -12,6 +12,7 @@ import sys
 import hashlib
 import platform
 import subprocess
+import shutil
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, List, Dict
@@ -414,6 +415,38 @@ train_dataset.jsonl
 
 
 # =============================================================================
+# EMBALLAGE DU PROJET
+# =============================================================================
+
+class ProjectPackager:
+    """Classe pour créer un exécutable tout-en-un."""
+
+    def __init__(self, config: AuditConfig):
+        self.config = config
+
+    def create_executable(self):
+        """Crée un exécutable avec PyInstaller."""
+        script_path = self.config.project_dir / "app.py"
+        dist_path = self.config.project_dir / "dist"
+        build_path = self.config.project_dir / "build"
+
+        if not script_path.exists():
+            raise FileNotFoundError(f"Script principal introuvable: {script_path}")
+
+        command = [
+            "pyinstaller",
+            "--onefile",
+            "--name=dim_moulinette",
+            f"--distpath={dist_path}",
+            f"--workpath={build_path}",
+            str(script_path)
+        ]
+
+        subprocess.run(command, check=True)
+        print("Exécutable créé avec succès dans le dossier dist.")
+
+
+# =============================================================================
 # POINT D'ENTRÉE
 # =============================================================================
 
@@ -454,6 +487,11 @@ def main():
     if args.quiet:
         import json
         print(json.dumps(results, indent=2))
+
+    # Emballage du projet (exécutable tout-en-un)
+    if results["summary"]["status"] == "OK":
+        packager = ProjectPackager(config)
+        packager.create_executable()
 
     # Code de sortie
     sys.exit(0 if results["summary"]["status"] == "OK" else 1)

@@ -69,7 +69,6 @@ wheels/
 *.egg
 
 # ==== ENVIRONNEMENTS VIRTUELS ====
-.env
 .venv/
 env/
 venv/
@@ -116,3 +115,10 @@ output/
 results/
 exports/
 train_dataset.jsonl
+
+# Exclude environment configuration
+.env
+
+# Exclude additional sensitive files
+secrets.env
+config.yaml

@@ -80,6 +80,7 @@ class AppState:
         self.training_running: bool = False
         self.episodes_running: bool = False
         self.ght_running: bool = False
+        self.ipp_check_running: bool = False
         self.ai_manager = None
 
 
@@ -108,6 +109,13 @@ class GHTRequest(BaseModel):
     """Requete de visualisation GHT."""
     excel_file: str
     output_format: str = "png"
+
+
+class IPPCheckRequest(BaseModel):
+    """Requete de verification IPP dates de naissance multiples."""
+    years: List[str] = ["2018", "2019", "2020", "2021", "2022"]
+    source_dir: str = None
+    export: bool = True
 
 
 class TrainingRequest(BaseModel):
@@ -731,6 +739,7 @@ async def system_info():
         "training_running": app_state.training_running,
         "episodes_running": app_state.episodes_running,
         "ght_running": app_state.ght_running,
+        "ipp_check_running": app_state.ipp_check_running,
         "ai_loaded": app_state.ai_manager.is_loaded if app_state.ai_manager else False,
         "source_dir": str(AppConfig.SOURCE_DIR),
         "output_dir": str(AppConfig.OUTPUT_DIR)
@@ -1035,6 +1044,102 @@ async def download_file(filename: str):
         filename=filename,
         media_type="application/octet-stream"
     )
+
+
+# =============================================================================
+# ROUTES - VERIFICATION IPP (Dates de naissance multiples)
+# =============================================================================
+
+@app.post("/api/ipp-check/run")
+async def run_ipp_check(request: IPPCheckRequest, background_tasks: BackgroundTasks):
+    """Lance la verification des IPP avec dates de naissance multiples."""
+    if app_state.ipp_check_running:
+        return {"status": "error", "message": "Une verification IPP est deja en cours"}
+
+    source = Path(request.source_dir) if request.source_dir else AppConfig.SOURCE_DIR
+    if not source.exists():
+        return {"status": "error", "message": f"Dossier source non trouve: {source}"}
+
+    log_buffer.add(f"Verification IPP DDN multiples ({', '.join(request.years)})...")
+    background_tasks.add_task(ipp_check_task, source, request.years, request.export)
+
+    return {"status": "started", "message": "Verification IPP demarree"}
+
+
+async def ipp_check_task(source_dir: Path, years: List[str], export: bool):
+    """Tache de verification IPP en arriere-plan."""
+    app_state.ipp_check_running = True
+
+    try:
+        from ipp_checker import IPPBirthDateChecker, IPPCheckerConfig
+
+        config = IPPCheckerConfig(
+            source_dir=source_dir,
+            output_dir=AppConfig.OUTPUT_DIR,
+            years=years
+        )
+        checker = IPPBirthDateChecker(config)
+
+        log_buffer.add(f"  Scan du dossier {source_dir}...")
+
+        # Execution de la verification
+        duplicates = checker.run_check()
+
+        # Export si demande
+        exported_files = {}
+        if export and duplicates is not None and not duplicates.is_empty():
+            exported_files = checker.export_results()
+            for name, path in exported_files.items():
+                log_buffer.add(f"  Export {name}: {Path(path).name}")
+
+        # Resultats
+        summary = checker.get_summary()
+        stats = summary["stats"]
+
+        app_state.last_results["ipp_check"] = {
+            "status": "completed",
+            "completed_at": datetime.now().isoformat(),
+            "stats": stats,
+            "problematic_ipps": summary["problematic_ipps"][:200],
+            "total_problematic": stats.get("patients_multi_ddn", 0),
+            "exported_files": {k: str(v) for k, v in exported_files.items()}
+        }
+
+        if stats.get("patients_multi_ddn", 0) > 0:
+            log_buffer.add(
+                f"ALERTE: {stats['patients_multi_ddn']} IPP avec DDN multiples detectes "
+                f"sur {stats['unique_patients']} patients"
+            )
+        else:
+            log_buffer.add("OK: Aucun IPP avec DDN multiples detecte")
+
+    except Exception as e:
+        logger.error(f"Erreur verification IPP: {e}")
+        log_buffer.add(f"Erreur verification IPP: {str(e)}")
+        app_state.last_results["ipp_check"] = {"status": "error", "message": str(e)}
+
+    finally:
+        app_state.ipp_check_running = False
+
+
+@app.get("/api/ipp-check/detail/{ipp}")
+async def get_ipp_detail(ipp: str):
+    """Retourne le detail des enregistrements pour un IPP donne."""
+    result = app_state.last_results.get("ipp_check")
+    if not result or result.get("status") != "completed":
+        return {"status": "error", "message": "Lancez d'abord une verification IPP"}
+
+    # Chercher dans le fichier detail exporte
+    detail_path = AppConfig.OUTPUT_DIR / "ipp_ddn_multiples_detail.csv"
+    if detail_path.exists():
+        try:
+            df = pl.read_csv(detail_path, separator=";", infer_schema_length=0)
+            detail = df.filter(pl.col("IPP") == ipp).to_dicts()
+            return {"status": "success", "ipp": ipp, "records": detail}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    return {"status": "error", "message": "Fichier detail non disponible"}
 
 
 # =============================================================================
