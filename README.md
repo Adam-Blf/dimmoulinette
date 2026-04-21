@@ -1,8 +1,10 @@
 # DIM - Data Intelligence Medicale
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Ollama](https://img.shields.io/badge/Ollama-Local%20AI-purple.svg)](https://ollama.ai)
+![Status](https://img.shields.io/badge/status-active-brightgreen)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)
+[![Ollama](https://img.shields.io/badge/Ollama-Local%20AI-000000?logo=ollama&logoColor=white)](https://ollama.ai)
+[![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/MIT)
 
 **Outil de traitement des donnees PMSI avec IA locale pour la psychiatrie francaise.**
 
