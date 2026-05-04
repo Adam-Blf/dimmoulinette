@@ -1,5 +1,10 @@
 # DIM - Data Intelligence Medicale
 
+<!-- adam-badges:start -->
+[![commits](https://img.shields.io/github/commit-activity/t/Adam-Blf/dimmoulinette?color=001329&label=commits&style=flat-square)](https://github.com/Adam-Blf/dimmoulinette/commits) [![visites](https://hits.sh/github.com/Adam-Blf/dimmoulinette.svg?style=flat-square&label=visites&color=001329)](https://hits.sh/github.com/Adam-Blf/dimmoulinette/) [![last commit](https://img.shields.io/github/last-commit/Adam-Blf/dimmoulinette?color=D4A437&style=flat-square&label=dernier%20push)](https://github.com/Adam-Blf/dimmoulinette/commits) [![top language](https://img.shields.io/github/languages/top/Adam-Blf/dimmoulinette?style=flat-square)](https://github.com/Adam-Blf/dimmoulinette) [![license](https://img.shields.io/github/license/Adam-Blf/dimmoulinette?style=flat-square&color=D4A437)](LICENSE)
+<!-- adam-badges:end -->
+
+
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)
