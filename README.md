@@ -15,6 +15,30 @@
 
 > :lock: 100% local - Aucune donnee ne quitte votre machine
 
+## Architecture
+
+```mermaid
+flowchart TB
+    FILES["Fichiers PMSI<br/>RAA · RPS · VIDHOSP · FICHCOMP"]
+    APP["app.py<br/>FastAPI · interface web"]
+    ETL["etl_processor.py<br/>parseur universel"]
+    PROC["processor.py<br/>pipeline ETL"]
+    PSY["psy_logic.py<br/>épisodes ambulatoires PSY"]
+    CONF["configs/<br/>formats JSON 2024"]
+    AI["ai_manager.py<br/>LLM local · Ollama"]
+    FT["finetune_lora.py<br/>QLoRA · GPU"]
+    OUT["output/<br/>CSV · épisodes · anomalies"]
+    FILES --> APP
+    APP --> PROC
+    CONF --> ETL
+    PROC --> ETL
+    ETL --> PSY
+    PSY --> OUT
+    OUT --> AI
+    FT --> AI
+    AI --> APP
+```
+
 ## Fonctionnalites
 
 - **ETL PMSI** : Transformation des fichiers RAA, RPS, VIDHOSP en CSV exploitables
