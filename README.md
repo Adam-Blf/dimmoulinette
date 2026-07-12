@@ -19,15 +19,15 @@
 
 ```mermaid
 flowchart TB
-    FILES["Fichiers PMSI<br/>RAA · RPS · VIDHOSP · FICHCOMP"]
-    APP["app.py<br/>FastAPI · interface web"]
+    FILES["Fichiers PMSI<br/>RAA - RPS - VIDHOSP - FICHCOMP"]
+    APP["app.py<br/>FastAPI - interface web"]
     ETL["etl_processor.py<br/>parseur universel"]
     PROC["processor.py<br/>pipeline ETL"]
     PSY["psy_logic.py<br/>épisodes ambulatoires PSY"]
     CONF["configs/<br/>formats JSON 2024"]
-    AI["ai_manager.py<br/>LLM local · Ollama"]
-    FT["finetune_lora.py<br/>QLoRA · GPU"]
-    OUT["output/<br/>CSV · épisodes · anomalies"]
+    AI["ai_manager.py<br/>LLM local - Ollama"]
+    FT["finetune_lora.py<br/>QLoRA - GPU"]
+    OUT["output/<br/>CSV - épisodes - anomalies"]
     FILES --> APP
     APP --> PROC
     CONF --> ETL
@@ -235,7 +235,7 @@ MIT License - Voir [LICENSE](LICENSE)
 ---
 
 <p align="center">
-  <sub>Par <a href="https://adam.beloucif.com">Adam Beloucif</a> · Data Engineer & Fullstack Developer · <a href="https://github.com/Adam-Blf">GitHub</a> · <a href="https://www.linkedin.com/in/adambeloucif/">LinkedIn</a></sub>
+  <sub>Par <a href="https://adam.beloucif.com">Adam Beloucif</a> - Data Engineer & Fullstack Developer - <a href="https://github.com/Adam-Blf">GitHub</a> - <a href="https://www.linkedin.com/in/adambeloucif/">LinkedIn</a></sub>
 </p>
 
 
